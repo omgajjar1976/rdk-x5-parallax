@@ -125,44 +125,45 @@ def speedup(mode):
 def architecture(mode):
     """Hand-placed SVG: readable labels, no overlapping edge text."""
     t = THEME[mode]
-    W, H = 1200, 360
+    W, H = 1200, 430
     boxes = {  # name: x, y, w, h, title, subtitle, highlight
-        'cam': (20, 160, 190, 92, 'GS130W stereo camera', '2x SC132GS, 1280x1088', False),
-        'mipi': (280, 160, 200, 92, 'mipi_cam', 'GDC rectify, rotation 90', False),
-        'codec': (680, 30, 220, 80, 'hobot_codec', 'JPEG encode', False),
-        'node': (680, 150, 240, 112, 'stereo_yolo_node', 'YOLO11m on BPU + stereo', True),
-        'web': (1010, 30, 175, 80, 'websocket', 'browser view, :8000', False),
-        'perf': (1010, 266, 175, 72, '/stereo_yolo/perf', 'stage timings', False),
+        'cam': (16, 190, 180, 104, 'GS130W', 'stereo camera', False),
+        'mipi': (262, 190, 190, 104, 'mipi_cam', 'GDC rectify', False),
+        'codec': (690, 24, 210, 92, 'hobot_codec', 'JPEG encode', False),
+        'node': (690, 176, 250, 140, 'stereo_yolo_node', 'YOLO11m on BPU', True),
+        'web': (1004, 24, 182, 92, 'websocket', 'browser :8000', False),
+        'perf': (1004, 300, 182, 92, 'perf topic', 'stage timings', False),
     }
     out = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" viewBox="0 0 {W} {H}" '
            f'font-family="-apple-system,Segoe UI,Helvetica,Arial,sans-serif">',
-           f'<rect width="{W}" height="{H}" rx="12" fill="{t["bg"]}"/>',
-           f'<defs><marker id="a" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto">'
-           f'<path d="M0,0 L10,5 L0,10 z" fill="{t["edge"]}"/></marker></defs>']
+           f'<rect width="{W}" height="{H}" rx="14" fill="{t["bg"]}"/>',
+           f'<defs><marker id="a" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">'
+           f'<path d="M0,0 L12,6 L0,12 z" fill="{t["edge"]}"/></marker></defs>']
 
-    def edge(points, label, lx, ly):
+    def edge(points, label, lx, ly, anchor='middle'):
         d = 'M' + ' L'.join(f'{x},{y}' for x, y in points)
-        out.append(f'<path d="{d}" fill="none" stroke="{t["edge"]}" stroke-width="2" marker-end="url(#a)"/>')
-        out.append(f'<text x="{lx}" y="{ly}" font-size="13" fill="{t["ink2"]}" text-anchor="middle">{label}</text>')
+        out.append(f'<path d="{d}" fill="none" stroke="{t["edge"]}" stroke-width="2.5" marker-end="url(#a)"/>')
+        if label:
+            out.append(f'<text x="{lx}" y="{ly}" font-size="17" fill="{t["ink2"]}" text-anchor="{anchor}">{label}</text>')
 
-    edge([(210, 206), (278, 206)], 'MIPI x2', 244, 196)
-    edge([(480, 196), (678, 196)], '/image_combine_raw (nv12)', 579, 186)
-    edge([(480, 236), (678, 236)], 'camera_info: f, baseline', 579, 258)
-    edge([(440, 160), (440, 70), (678, 70)], '/image_combine_raw', 560, 60)
-    edge([(900, 70), (1008, 70)], 'JPEG', 954, 60)
-    edge([(920, 190), (960, 190), (960, 96), (1008, 96)], '', 0, 0)
-    out.append(f'<text x="968" y="150" font-size="13" fill="{t["ink2"]}">detections</text>')
-    out.append(f'<text x="968" y="166" font-size="13" fill="{t["ink2"]}">(class + metres)</text>')
-    edge([(920, 240), (960, 240), (960, 302), (1008, 302)], '', 0, 0)
+    edge([(196, 242), (258, 242)], 'MIPI', 227, 230)
+    edge([(452, 226), (686, 226)], 'stereo pair (rectified)', 569, 214)
+    edge([(452, 270), (686, 270)], 'focal length, baseline', 569, 298)
+    edge([(400, 190), (400, 70), (686, 70)], 'stereo pair', 543, 58)
+    edge([(900, 70), (1000, 70)], 'JPEG', 950, 58)
+    edge([(940, 220), (970, 220), (970, 100), (1000, 100)], '', 0, 0)
+    out.append(f'<text x="978" y="168" font-size="17" fill="{t["ink2"]}">boxes +</text>')
+    out.append(f'<text x="978" y="190" font-size="17" fill="{t["ink2"]}">metres</text>')
+    edge([(940, 280), (970, 280), (970, 346), (1000, 346)], '', 0, 0)
     for x, y, w, h, title, sub, hi in boxes.values():
         stroke = t['hi'] if hi else t['edge']
-        sw = 3 if hi else 1.5
-        out.append(f'<rect x="{x}" y="{y}" width="{w}" height="{h}" rx="10" fill="{t["box"]}" stroke="{stroke}" stroke-width="{sw}"/>')
-        out.append(f'<text x="{x + w / 2}" y="{y + h / 2 - 4}" font-size="16" font-weight="600" fill="{t["ink"]}" text-anchor="middle">{title}</text>')
-        out.append(f'<text x="{x + w / 2}" y="{y + h / 2 + 18}" font-size="13" fill="{t["ink2"]}" text-anchor="middle">{sub}</text>')
+        sw = 3.5 if hi else 2
+        out.append(f'<rect x="{x}" y="{y}" width="{w}" height="{h}" rx="12" fill="{t["box"]}" stroke="{stroke}" stroke-width="{sw}"/>')
+        out.append(f'<text x="{x + w / 2}" y="{y + h / 2 - 6}" font-size="22" font-weight="600" fill="{t["ink"]}" text-anchor="middle">{title}</text>')
+        out.append(f'<text x="{x + w / 2}" y="{y + h / 2 + 22}" font-size="17" fill="{t["ink2"]}" text-anchor="middle">{sub}</text>')
         if hi:
-            out.append(f'<text x="{x + w / 2}" y="{y + h - 10}" font-size="12" font-weight="600" fill="{t["hi"]}" text-anchor="middle">this repo</text>')
-    out.append(f'<text x="20" y="335" font-size="13" fill="{t["ink2"]}">All nodes run on the RDK X5. Only the browser is on the laptop.</text>')
+            out.append(f'<text x="{x + w / 2}" y="{y + h - 14}" font-size="16" font-weight="700" fill="{t["hi"]}" text-anchor="middle">+ stereo distance (this repo)</text>')
+    out.append(f'<text x="16" y="414" font-size="17" fill="{t["ink2"]}">Everything runs on the RDK X5; only the browser is on the laptop.</text>')
     out.append('</svg>')
     os.makedirs(OUT, exist_ok=True)
     open(os.path.join(OUT, f'architecture_{mode}.svg'), 'w').write('\n'.join(out))

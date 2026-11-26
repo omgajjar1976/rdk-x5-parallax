@@ -1,40 +1,38 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="360" viewBox="0 0 1200 360" font-family="-apple-system,Segoe UI,Helvetica,Arial,sans-serif">
-<rect width="1200" height="360" rx="12" fill="#0d1117"/>
-<defs><marker id="a" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#6e7681"/></marker></defs>
-<path d="M210,206 L278,206" fill="none" stroke="#6e7681" stroke-width="2" marker-end="url(#a)"/>
-<text x="244" y="196" font-size="13" fill="#9c9c9c" text-anchor="middle">MIPI x2</text>
-<path d="M480,196 L678,196" fill="none" stroke="#6e7681" stroke-width="2" marker-end="url(#a)"/>
-<text x="579" y="186" font-size="13" fill="#9c9c9c" text-anchor="middle">/image_combine_raw (nv12)</text>
-<path d="M480,236 L678,236" fill="none" stroke="#6e7681" stroke-width="2" marker-end="url(#a)"/>
-<text x="579" y="258" font-size="13" fill="#9c9c9c" text-anchor="middle">camera_info: f, baseline</text>
-<path d="M440,160 L440,70 L678,70" fill="none" stroke="#6e7681" stroke-width="2" marker-end="url(#a)"/>
-<text x="560" y="60" font-size="13" fill="#9c9c9c" text-anchor="middle">/image_combine_raw</text>
-<path d="M900,70 L1008,70" fill="none" stroke="#6e7681" stroke-width="2" marker-end="url(#a)"/>
-<text x="954" y="60" font-size="13" fill="#9c9c9c" text-anchor="middle">JPEG</text>
-<path d="M920,190 L960,190 L960,96 L1008,96" fill="none" stroke="#6e7681" stroke-width="2" marker-end="url(#a)"/>
-<text x="0" y="0" font-size="13" fill="#9c9c9c" text-anchor="middle"></text>
-<text x="968" y="150" font-size="13" fill="#9c9c9c">detections</text>
-<text x="968" y="166" font-size="13" fill="#9c9c9c">(class + metres)</text>
-<path d="M920,240 L960,240 L960,302 L1008,302" fill="none" stroke="#6e7681" stroke-width="2" marker-end="url(#a)"/>
-<text x="0" y="0" font-size="13" fill="#9c9c9c" text-anchor="middle"></text>
-<rect x="20" y="160" width="190" height="92" rx="10" fill="#161b22" stroke="#6e7681" stroke-width="1.5"/>
-<text x="115.0" y="202.0" font-size="16" font-weight="600" fill="#efefef" text-anchor="middle">GS130W stereo camera</text>
-<text x="115.0" y="224.0" font-size="13" fill="#9c9c9c" text-anchor="middle">2x SC132GS, 1280x1088</text>
-<rect x="280" y="160" width="200" height="92" rx="10" fill="#161b22" stroke="#6e7681" stroke-width="1.5"/>
-<text x="380.0" y="202.0" font-size="16" font-weight="600" fill="#efefef" text-anchor="middle">mipi_cam</text>
-<text x="380.0" y="224.0" font-size="13" fill="#9c9c9c" text-anchor="middle">GDC rectify, rotation 90</text>
-<rect x="680" y="30" width="220" height="80" rx="10" fill="#161b22" stroke="#6e7681" stroke-width="1.5"/>
-<text x="790.0" y="66.0" font-size="16" font-weight="600" fill="#efefef" text-anchor="middle">hobot_codec</text>
-<text x="790.0" y="88.0" font-size="13" fill="#9c9c9c" text-anchor="middle">JPEG encode</text>
-<rect x="680" y="150" width="240" height="112" rx="10" fill="#161b22" stroke="#338ced" stroke-width="3"/>
-<text x="800.0" y="202.0" font-size="16" font-weight="600" fill="#efefef" text-anchor="middle">stereo_yolo_node</text>
-<text x="800.0" y="224.0" font-size="13" fill="#9c9c9c" text-anchor="middle">YOLO11m on BPU + stereo</text>
-<text x="800.0" y="252" font-size="12" font-weight="600" fill="#338ced" text-anchor="middle">this repo</text>
-<rect x="1010" y="30" width="175" height="80" rx="10" fill="#161b22" stroke="#6e7681" stroke-width="1.5"/>
-<text x="1097.5" y="66.0" font-size="16" font-weight="600" fill="#efefef" text-anchor="middle">websocket</text>
-<text x="1097.5" y="88.0" font-size="13" fill="#9c9c9c" text-anchor="middle">browser view, :8000</text>
-<rect x="1010" y="266" width="175" height="72" rx="10" fill="#161b22" stroke="#6e7681" stroke-width="1.5"/>
-<text x="1097.5" y="298.0" font-size="16" font-weight="600" fill="#efefef" text-anchor="middle">/stereo_yolo/perf</text>
-<text x="1097.5" y="320.0" font-size="13" fill="#9c9c9c" text-anchor="middle">stage timings</text>
-<text x="20" y="335" font-size="13" fill="#9c9c9c">All nodes run on the RDK X5. Only the browser is on the laptop.</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="430" viewBox="0 0 1200 430" font-family="-apple-system,Segoe UI,Helvetica,Arial,sans-serif">
+<rect width="1200" height="430" rx="14" fill="#0d1117"/>
+<defs><marker id="a" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0,0 L12,6 L0,12 z" fill="#6e7681"/></marker></defs>
+<path d="M196,242 L258,242" fill="none" stroke="#6e7681" stroke-width="2.5" marker-end="url(#a)"/>
+<text x="227" y="230" font-size="17" fill="#9c9c9c" text-anchor="middle">MIPI</text>
+<path d="M452,226 L686,226" fill="none" stroke="#6e7681" stroke-width="2.5" marker-end="url(#a)"/>
+<text x="569" y="214" font-size="17" fill="#9c9c9c" text-anchor="middle">stereo pair (rectified)</text>
+<path d="M452,270 L686,270" fill="none" stroke="#6e7681" stroke-width="2.5" marker-end="url(#a)"/>
+<text x="569" y="298" font-size="17" fill="#9c9c9c" text-anchor="middle">focal length, baseline</text>
+<path d="M400,190 L400,70 L686,70" fill="none" stroke="#6e7681" stroke-width="2.5" marker-end="url(#a)"/>
+<text x="543" y="58" font-size="17" fill="#9c9c9c" text-anchor="middle">stereo pair</text>
+<path d="M900,70 L1000,70" fill="none" stroke="#6e7681" stroke-width="2.5" marker-end="url(#a)"/>
+<text x="950" y="58" font-size="17" fill="#9c9c9c" text-anchor="middle">JPEG</text>
+<path d="M940,220 L970,220 L970,100 L1000,100" fill="none" stroke="#6e7681" stroke-width="2.5" marker-end="url(#a)"/>
+<text x="978" y="168" font-size="17" fill="#9c9c9c">boxes +</text>
+<text x="978" y="190" font-size="17" fill="#9c9c9c">metres</text>
+<path d="M940,280 L970,280 L970,346 L1000,346" fill="none" stroke="#6e7681" stroke-width="2.5" marker-end="url(#a)"/>
+<rect x="16" y="190" width="180" height="104" rx="12" fill="#161b22" stroke="#6e7681" stroke-width="2"/>
+<text x="106.0" y="236.0" font-size="22" font-weight="600" fill="#efefef" text-anchor="middle">GS130W</text>
+<text x="106.0" y="264.0" font-size="17" fill="#9c9c9c" text-anchor="middle">stereo camera</text>
+<rect x="262" y="190" width="190" height="104" rx="12" fill="#161b22" stroke="#6e7681" stroke-width="2"/>
+<text x="357.0" y="236.0" font-size="22" font-weight="600" fill="#efefef" text-anchor="middle">mipi_cam</text>
+<text x="357.0" y="264.0" font-size="17" fill="#9c9c9c" text-anchor="middle">GDC rectify</text>
+<rect x="690" y="24" width="210" height="92" rx="12" fill="#161b22" stroke="#6e7681" stroke-width="2"/>
+<text x="795.0" y="64.0" font-size="22" font-weight="600" fill="#efefef" text-anchor="middle">hobot_codec</text>
+<text x="795.0" y="92.0" font-size="17" fill="#9c9c9c" text-anchor="middle">JPEG encode</text>
+<rect x="690" y="176" width="250" height="140" rx="12" fill="#161b22" stroke="#338ced" stroke-width="3.5"/>
+<text x="815.0" y="240.0" font-size="22" font-weight="600" fill="#efefef" text-anchor="middle">stereo_yolo_node</text>
+<text x="815.0" y="268.0" font-size="17" fill="#9c9c9c" text-anchor="middle">YOLO11m on BPU</text>
+<text x="815.0" y="302" font-size="16" font-weight="700" fill="#338ced" text-anchor="middle">+ stereo distance (this repo)</text>
+<rect x="1004" y="24" width="182" height="92" rx="12" fill="#161b22" stroke="#6e7681" stroke-width="2"/>
+<text x="1095.0" y="64.0" font-size="22" font-weight="600" fill="#efefef" text-anchor="middle">websocket</text>
+<text x="1095.0" y="92.0" font-size="17" fill="#9c9c9c" text-anchor="middle">browser :8000</text>
+<rect x="1004" y="300" width="182" height="92" rx="12" fill="#161b22" stroke="#6e7681" stroke-width="2"/>
+<text x="1095.0" y="340.0" font-size="22" font-weight="600" fill="#efefef" text-anchor="middle">perf topic</text>
+<text x="1095.0" y="368.0" font-size="17" fill="#9c9c9c" text-anchor="middle">stage timings</text>
+<text x="16" y="414" font-size="17" fill="#9c9c9c">Everything runs on the RDK X5; only the browser is on the laptop.</text>
 </svg>
