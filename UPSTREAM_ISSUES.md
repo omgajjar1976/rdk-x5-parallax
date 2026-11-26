@@ -4,6 +4,7 @@ Board: RDK X5 4 GB, RDK OS 3.5.0, tros-humble 2.5.2, mipi_cam from tros-humble, 
 camera: RDK Stereo Camera GS130W. Found 2026-11-25/26. Each entry: what, evidence, suggested fix, status.
 
 ## 1. `dequantize_tensor` skips SCALE-quantized outputs (wrong YOLOv8 boxes)
+- **Upstream PR:** https://github.com/D-Robotics/x5-hobot-sp-samples/pull/21
 - Where: `/app/pydev_demo/utils/postprocess_utils.py` (package `hobot-sp-samples`), `dequantize_tensor`.
 - What: `if quant_info.quant_type != 1: return q_tensor`. `hbm_runtime` reports scale quantization as
   `hbDNNQuantiType.SCALE == 2`, so int32 outputs are returned raw.
@@ -21,13 +22,15 @@ camera: RDK Stereo Camera GS130W. Found 2026-11-25/26. Each entry: what, evidenc
   buffer takes ~1 ms (`stereo_geom.letterbox_nv12`).
 - Fix: offer an NV12-in letterbox for camera frames.
 
-## 3. YOLOv8 sample sets NMS IoU threshold from the score threshold
+## 3. YOLO samples set the NMS IoU threshold from the score threshold (5 samples)
+- **Upstream PR:** https://github.com/D-Robotics/x5-hobot-sp-samples/pull/22
 - Where: `/app/pydev_demo/02_detection_sample/03_ultralytics_yolov8/ultralytics_yolov8.py`,
   `self.nms_thresh = opt.score_thres` while a separate `--nms-thres` argument exists and is unused.
 - Fix: `self.nms_thresh = opt.nms_thres`. (Not yet tested on the board.)
 - Upstream: `D-Robotics/x5-hobot-sp-samples`, `debian/app/pydev_demo/02_detection_sample/03_ultralytics_yolov8/ultralytics_yolov8.py` line 69, still on `main`.
 
 ## 4. Default `mipi_rotation` with the GS130W gives vertical disparity and rotated camera_info
+- **Upstream issue:** https://github.com/D-Robotics/hobot_mipi_cam/issues/115
 - Where: `hobot_mipi_cam`, `hobot_mipi_cap.cpp`: output turn = `rotation - cal_rotate`; the GS130W EEPROM
   stores angle 1 (90 deg), launch default `mipi_rotation 0.0`, so output is turned 270 deg.
 - Evidence: default launch: left/right shifted vertically (patch match dy ~55 px, dx 0), camera_info K/R/P look
