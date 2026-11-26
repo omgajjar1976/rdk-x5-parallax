@@ -1,5 +1,12 @@
 # Stage 2 Proposal: Stereo HIL, an RDK X5 that drives a simulated car and is scored against ground truth
 
+## The demo, in one scene
+
+The simulated car drives towards a zebra crossing at 20 km/h. A pedestrian steps onto the road. The RDK X5 sees the
+person in the stereo pair, measures the distance on its own BPU and CPU, and brakes. The car stops short of the crossing,
+and the report shows the stopping gap, the depth error at each distance and the time from image to brake command, all
+checked against the simulator's exact positions.
+
 ## The problem
 
 Testing a robot's perception on real roads is slow, unsafe and gives no ground truth: when a stereo camera says a
@@ -84,14 +91,14 @@ board's view in the browser. A run ends with a report (`report.txt` + plots).
 
 ## Measurable success targets (Stage 3)
 
-| # | Metric | Target | Baseline today |
-|---|---|---|---|
-| T1 | Depth error in sim, AbsRel vs ground truth | ≤ 3 % at 2–5 m, ≤ 8 % at 5–10 m | Checker built; board not run on sim yet |
-| T2 | Real-world distance error (tape, floor tiles) | ≤ 3 % to 1.2 m, ≤ 6 % to 2.4 m | +1.5 % at 0.6 m (measured) |
-| T3 | Perception rate on the board for the sim stream | ≥ 10 Hz | 5–6 fps (Python, real camera) |
-| T4 | Image-to-command latency (p95) | ≤ 150 ms | Frame age 224–236 ms today |
-| T5 | Emergency brake for a crossing pedestrian | 10/10 runs stop with ≥ 2 m gap, 0 collisions | Scenario built (2 pedestrians on a zebra crossing) |
-| T6 | Car following (adaptive cruise) | Time gap within ±20 % of 2.0 s after settling | — |
-| T7 | Two concurrent BPU workloads | YOLO11m + StereoNet both ≥ 10 Hz | YOLO11m 40.5 ms alone (BPU) |
+| # | Metric | Target | Baseline today | How measured |
+|---|---|---|---|---|
+| T1 | Depth error in sim, AbsRel vs ground truth | ≤ 3 % at 2–5 m, ≤ 8 % at 5–10 m | Checker built; board not run on sim yet | Board depth (per box and StereoNet) scored by `check_depth.py` against the simulator depth image; median AbsRel per range bin over 3 drives in each world |
+| T2 | Real-world distance error (tape, floor tiles) | ≤ 3 % to 1.2 m, ≤ 6 % to 2.4 m | +1.5 % at 0.6 m (measured) | Object placed on tile lines at 0.6 / 1.2 / 1.8 / 2.4 m, 5 readings each, compared with the tape distance |
+| T3 | Perception rate on the board for the sim stream | ≥ 10 Hz | 5–6 fps (Python, real camera) | Mean output rate from `/stereo_yolo/perf` over a 5-minute simulator run |
+| T4 | Image-to-command latency (p95) | ≤ 150 ms | Frame age 224–236 ms today | Image timestamp to the time the bridge receives the matching command, in simulator time; 95th percentile over 5 minutes |
+| T5 | Emergency brake for a crossing pedestrian | 10/10 runs stop with ≥ 2 m gap, 0 collisions | Scenario built (2 pedestrians on a zebra crossing) | 10 runs of the crossing scenario at 20 km/h; gap = car-to-pedestrian distance from simulator positions at standstill; any contact counts as a collision |
+| T6 | Car following (adaptive cruise) | Time gap within ±20 % of 2.0 s after settling | — | SUMO lead car scenario; time gap = distance ÷ own speed from simulator positions, after 10 s settling, over 60 s |
+| T7 | Two concurrent BPU workloads | YOLO11m + StereoNet both ≥ 10 Hz | YOLO11m 40.5 ms alone (BPU) | Both nodes running at once; output rate of each with `ros2 topic hz`, BPU load with `hrut_somstatus` |
 
 Stretch: lane keeping from the board's own perception (lateral control is fixed to the route until then).
