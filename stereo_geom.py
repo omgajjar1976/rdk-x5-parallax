@@ -65,7 +65,7 @@ def nms(xyxy, scores, ids, iou=0.45, score=0.0):
     return np.asarray(cv2.dnn.NMSBoxesBatched(xywh, scores.tolist(), ids.tolist(), score, iou), int).reshape(-1)
 
 
-def box_disparity(L, R, box, max_disp=260, half=7, min_std=12.0, min_ncc=0.85):
+def box_disparity(L, R, box, max_disp=260, half=7, min_std=12.0, min_ncc=0.85, grid=5):
     """Median disparity (px, R shifted left) over textured patches in the middle of box; None if too few.
 
     Returns (median, iqr, n_patches). L, R: rectified grey images, same size.
@@ -75,14 +75,15 @@ def box_disparity(L, R, box, max_disp=260, half=7, min_std=12.0, min_ncc=0.85):
     # central 60% of the box: less background bleeding in at the edges
     cx0, cx1 = x0 + 0.2 * (x1 - x0), x1 - 0.2 * (x1 - x0)
     cy0, cy1 = y0 + 0.2 * (y1 - y0), y1 - 0.2 * (y1 - y0)
-    # at most 8 x 8 patch centres per box: cost stays flat for big boxes (a tall bottle took 890 ms)
-    vs = np.unique(np.linspace(max(cy0, half), min(cy1, h - half - 2), 8).astype(int))
-    us = np.unique(np.linspace(max(cx0, half + 1), min(cx1, w - half - 2), 8).astype(int))
+    # at most grid x grid patch centres per box: cost stays flat for big boxes (a tall bottle took 890 ms;
+    # each small matchTemplate costs ~1.3 ms on the busy A55 cores, so the grid is kept small)
+    vs = np.unique(np.linspace(max(cy0, half), min(cy1, h - half - 2), grid).astype(int))
+    us = np.unique(np.linspace(max(cx0, half + 1), min(cx1, w - half - 2), grid).astype(int))
     ds = []
     for v in vs:
         for u in us:
             p = L[v - half:v + half + 1, u - half:u + half + 1]
-            if p.std() < min_std:
+            if cv2.meanStdDev(p)[1][0, 0] < min_std:
                 continue
             a = max(0, u - half - max_disp)
             strip = R[v - half:v + half + 1, a:u + half + 1]
