@@ -3,17 +3,66 @@ import cv2
 import numpy as np
 
 
+_LB = {}
+
+
 def letterbox_nv12(y, uv, size=640):
-    """Letterbox an NV12 frame (y: HxW, uv: H/2 x W/2 x 2) to size x size; returns the model input."""
+    """Letterbox an NV12 frame (y: HxW, uv: H/2 x W/2 x 2) to size x size; returns the model input.
+
+    Reuses one output buffer per input size; an exact 2x downscale (1280-wide camera) is a strided copy.
+    """
     h, w = y.shape
     s = min(size / w, size / h)
     nw, nh = int(w * s) // 2 * 2, int(h * s) // 2 * 2
     top, left = (size - nh) // 2 // 2 * 2, (size - nw) // 2 // 2 * 2
-    out_y = np.full((size, size), 127, np.uint8)
-    out_uv = np.full((size // 2, size // 2, 2), 128, np.uint8)
-    out_y[top:top + nh, left:left + nw] = cv2.resize(y, (nw, nh))
-    out_uv[top // 2:(top + nh) // 2, left // 2:(left + nw) // 2] = cv2.resize(uv, (nw // 2, nh // 2))
-    return np.concatenate([out_y.reshape(-1), out_uv.reshape(-1)]).reshape(1, size * 3 // 2, size, 1)
+    if (h, w, size) not in _LB:
+        buf = np.empty(size * size * 3 // 2, np.uint8)
+        buf[:size * size] = 127
+        buf[size * size:] = 128
+        _LB[(h, w, size)] = buf
+    buf = _LB[(h, w, size)]
+    oy = buf[:size * size].reshape(size, size)
+    ouv = buf[size * size:].reshape(size // 2, size // 2, 2)
+    if (nw, nh) == (w // 2, h // 2):
+        oy[top:top + nh, left:left + nw] = y[::2, ::2]
+        ouv[top // 2:(top + nh) // 2, left // 2:(left + nw) // 2] = uv[::2, ::2]
+    else:
+        oy[top:top + nh, left:left + nw] = cv2.resize(y, (nw, nh), interpolation=cv2.INTER_AREA)
+        ouv[top // 2:(top + nh) // 2, left // 2:(left + nw) // 2] = cv2.resize(uv, (nw // 2, nh // 2), interpolation=cv2.INTER_AREA)
+    return buf.reshape(1, size * 3 // 2, size, 1)
+
+
+def decode_yolov8_level(cls, box, scale, stride, score):
+    """One YOLOv8 head level (cls: ..xC logits, box: ..x64 DFL bins) -> xyxy (640 input px), class ids, scores.
+
+    scale: per-channel dequant scale for an int32 box output (64,), or None for float output.
+    Only rows above the score threshold are dequantized and decoded.
+    """
+    c = cls.reshape(-1, cls.shape[-1])
+    mx = c.max(1)
+    idx = np.flatnonzero(mx >= -np.log(1 / score - 1))
+    if idx.size == 0:
+        return np.zeros((0, 4), np.float32), np.zeros(0, int), np.zeros(0, np.float32)
+    ids = c[idx].argmax(1)
+    sc = 1 / (1 + np.exp(-mx[idx]))
+    b = box.reshape(-1, box.shape[-1])[idx].astype(np.float32)
+    if scale is not None:
+        b *= scale
+    b = b.reshape(-1, 4, 16)
+    b = np.exp(b - b.max(2, keepdims=True))
+    ltrb = (b * np.arange(16, dtype=np.float32)).sum(2) / b.sum(2)
+    g = int(round(np.sqrt(c.shape[0])))
+    gx, gy = idx % g + 0.5, idx // g + 0.5
+    xyxy = np.stack([gx - ltrb[:, 0], gy - ltrb[:, 1], gx + ltrb[:, 2], gy + ltrb[:, 3]], 1) * stride
+    return xyxy.astype(np.float32), ids, sc.astype(np.float32)
+
+
+def nms(xyxy, scores, ids, iou=0.45, score=0.0):
+    """Class-wise NMS (OpenCV); returns kept indices."""
+    if len(xyxy) == 0:
+        return np.zeros(0, int)
+    xywh = np.c_[xyxy[:, :2], xyxy[:, 2:] - xyxy[:, :2]].tolist()
+    return np.asarray(cv2.dnn.NMSBoxesBatched(xywh, scores.tolist(), ids.tolist(), score, iou), int).reshape(-1)
 
 
 def box_disparity(L, R, box, max_disp=260, half=7, min_std=12.0, min_ncc=0.85):

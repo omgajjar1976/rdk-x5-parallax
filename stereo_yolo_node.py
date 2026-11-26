@@ -19,7 +19,7 @@ import cv2
 import numpy as np
 import rclpy
 from rclpy.node import Node
-from rclpy.qos import qos_profile_sensor_data
+from rclpy.qos import HistoryPolicy, QoSProfile, ReliabilityPolicy
 from sensor_msgs.msg import CameraInfo, Image
 from std_msgs.msg import String
 from ai_msgs.msg import Attribute, PerceptionTargets, Roi, Target
@@ -28,7 +28,7 @@ import hbm_runtime
 sys.path.insert(0, '/app/pydev_demo')  # D-Robotics helpers, package hobot-sp-samples
 import utils.postprocess_utils as post  # noqa: E402
 
-from stereo_geom import box_disparity, letterbox_nv12  # noqa: E402
+from stereo_geom import box_disparity, decode_yolov8_level, letterbox_nv12, nms  # noqa: E402
 
 COCO = [l.strip() for l in open('/app/pydev_demo/02_detection_sample/03_ultralytics_yolov8/coco_classes.names')]
 
@@ -47,10 +47,12 @@ class StereoYolo(Node):
         self.outs = self.m.output_names[self.mn]   # [cls80, box80, cls40, box40, cls20, box20]
         self.quants = self.m.output_quants[self.mn]
         assert [self.m.output_shapes[self.mn][n][-1] for n in self.outs] == [80, 64] * 3, 'unexpected YOLOv8 head layout'
-        self.weights = np.arange(16, dtype=np.float32)[None, None, :]
+        self.scales = {k: (q.scale.astype(np.float32) if int(q.quant_type) == 2 else None) for k, q in self.quants.items()}
         self.fxB = None  # px*m, from camera_info
         self.create_subscription(CameraInfo, '/image_combine_raw/right/camera_info', self.on_info, 1)
-        self.create_subscription(Image, '/image_combine_raw', self.on_image, qos_profile_sensor_data)
+        # depth 1: always work on the newest frame instead of a backlog
+        latest = QoSProfile(depth=1, history=HistoryPolicy.KEEP_LAST, reliability=ReliabilityPolicy.BEST_EFFORT)
+        self.create_subscription(Image, '/image_combine_raw', self.on_image, latest)
         self.pub = self.create_publisher(PerceptionTargets, '/stereo_yolo/detections', 10)
         self.pub_perf = self.create_publisher(String, '/stereo_yolo/perf', 10)
         self.get_logger().info(f'model {self.mn} loaded')
@@ -65,16 +67,14 @@ class StereoYolo(Node):
     def detect(self, y, uv):
         h, w = y.shape
         out = self.m.run({self.mn: {self.inp: letterbox_nv12(y, uv)}})[self.mn]
-        f = post.dequantize_outputs(out, self.quants)
-        raw = -np.log(1 / self.score - 1)
         B, S, I = [], [], []
-        for i, (stride, grid) in enumerate(zip([8, 16, 32], [80, 40, 20])):
-            s, ids, valid = post.filter_classification(f[self.outs[2 * i]], raw)
-            B.append(post.decode_boxes(f[self.outs[2 * i + 1]], valid, grid, stride, self.weights))
-            S.append(s)
-            I.append(ids)
+        for i, stride in enumerate([8, 16, 32]):
+            bn = self.outs[2 * i + 1]
+            # own dequant: utils.dequantize_tensor skips SCALE (=2) outputs, leaving the int32 box head raw
+            b, ids, s = decode_yolov8_level(out[self.outs[2 * i]], out[bn], self.scales[bn], stride, self.score)
+            B.append(b); S.append(s); I.append(ids)
         B, S, I = np.concatenate(B), np.concatenate(S), np.concatenate(I)
-        keep = post.NMS(B, S, I, self.nms)
+        keep = nms(B, S, I, self.nms)
         return post.scale_coords_back(B[keep], w, h, 640, 640, 1), I[keep], S[keep]
 
     def on_image(self, msg):
