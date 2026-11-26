@@ -65,7 +65,7 @@ def nms(xyxy, scores, ids, iou=0.45, score=0.0):
     return np.asarray(cv2.dnn.NMSBoxesBatched(xywh, scores.tolist(), ids.tolist(), score, iou), int).reshape(-1)
 
 
-def box_disparity(L, R, box, max_disp=260, half=7, min_std=12.0, min_ncc=0.85, grid=5):
+def box_disparity(L, R, box, max_disp=260, half=7, min_std=12.0, min_ncc=0.75, grid=7):
     """Median disparity (px, R shifted left) over textured patches in the middle of box; None if too few.
 
     Returns (median, iqr, n_patches). L, R: rectified grey images, same size.

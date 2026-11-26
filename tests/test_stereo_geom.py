@@ -26,7 +26,7 @@ for true_d in (12.0, 40.25, 66.9, 150.5, 216.3):
     warped = cv2.remap(obj, mapx, mapy, cv2.INTER_CUBIC)
     R[400:700, 200:1060][:, inside] = warped[:, inside]
     d, iqr, n = box_disparity(L, R, (500, 400, 760, 700))
-    assert d is not None and abs(d - true_d) < 0.25 and n <= 25, (true_d, d, n)
+    assert d is not None and abs(d - true_d) < 0.25 and n <= 49, (true_d, d, n)
     print(f'disparity true {true_d:7.2f}  measured {d:7.2f}  iqr {iqr:.2f}  patches {n}')
 # flat box -> no texture -> None
 flat = np.full((H, W), 120, np.uint8)
