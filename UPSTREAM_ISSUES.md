@@ -11,7 +11,9 @@ camera: RDK Stereo Camera GS130W. Found 2026-11-25/26. Each entry: what, evidenc
   per-channel `scale` (64,) along axis 3, no zero point. The raw ints go straight into the DFL softmax.
   Unit test in `tests/test_stereo_geom.py` shows the decoded box differs with vs without the scale.
 - Fix: compare against the enum (`hbDNNQuantiType.SCALE`) and handle an empty `zero_point`.
-- Status: worked around in `stereo_geom.decode_yolov8_level`. Upstream repo for hobot-sp-samples: to locate.
+- Status: worked around in `stereo_geom.decode_yolov8_level`.
+- Upstream: `D-Robotics/x5-hobot-sp-samples`, `debian/app/pydev_demo/utils/postprocess_utils.py` line 186, still present on `main` (checked 2026-11-26).
+  `D-Robotics/rdk_model_zoo` `utils/py_utils/quantization.py` already compares by name (`"SCALE"`), so that is the reference fix.
 
 ## 2. Sample letterbox is slow (25 ms per frame on X5)
 - Where: same samples, `preprocess_utils.resized_image` + `bgr_to_nv12_planes` path (BGR round trip).
@@ -23,6 +25,7 @@ camera: RDK Stereo Camera GS130W. Found 2026-11-25/26. Each entry: what, evidenc
 - Where: `/app/pydev_demo/02_detection_sample/03_ultralytics_yolov8/ultralytics_yolov8.py`,
   `self.nms_thresh = opt.score_thres` while a separate `--nms-thres` argument exists and is unused.
 - Fix: `self.nms_thresh = opt.nms_thres`. (Not yet tested on the board.)
+- Upstream: `D-Robotics/x5-hobot-sp-samples`, `debian/app/pydev_demo/02_detection_sample/03_ultralytics_yolov8/ultralytics_yolov8.py` line 69, still on `main`.
 
 ## 4. Default `mipi_rotation` with the GS130W gives vertical disparity and rotated camera_info
 - Where: `hobot_mipi_cam`, `hobot_mipi_cap.cpp`: output turn = `rotation - cal_rotate`; the GS130W EEPROM
@@ -32,6 +35,7 @@ camera: RDK Stereo Camera GS130W. Found 2026-11-25/26. Each entry: what, evidenc
   camera_info, f 501.797, P[3] = -40153.5 (B 80.02 mm), horizontal disparity, rows aligned (|dy|<=1 px 83%).
   The websocket preview with defaults also looks sideways.
 - Fix: default the dual-channel launch to the EEPROM angle (rotation = cal_rotate) or document it for GS130W.
+- Upstream: `D-Robotics/hobot_mipi_cam` (default branch `develop`, active: PRs #112-114 merged recently). Behaviour change, so open an issue first.
 
 ## 5. `camera_info` header frame_id `default_cam` for both eyes, distortion_model empty
 - Evidence: `/image_combine_raw/{left,right}/camera_info` both `frame_id: default_cam`, `distortion_model: ''`,
