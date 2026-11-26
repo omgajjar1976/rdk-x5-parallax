@@ -36,17 +36,20 @@ COCO = [l.strip() for l in open('/app/pydev_demo/02_detection_sample/03_ultralyt
 class StereoYolo(Node):
     def __init__(self):
         super().__init__('stereo_yolo')
-        self.declare_parameter('model', '/app/pydev_demo/models/yolov8_640x640_nv12.bin')
-        self.declare_parameter('score_thres', 0.35)
+        self.declare_parameter('model', '/app/pydev_demo/models/yolo11m_detect_bayese_640x640_nv12_modified.bin')
+        self.declare_parameter('score_thres', 0.25)
         self.declare_parameter('nms_thres', 0.45)
         self.score = self.get_parameter('score_thres').value
         self.nms = self.get_parameter('nms_thres').value
         self.m = hbm_runtime.HB_HBMRuntime(self.get_parameter('model').value)
         self.mn = self.m.model_names[0]
         self.inp = self.m.input_names[self.mn][0]
-        self.outs = self.m.output_names[self.mn]   # [cls80, box80, cls40, box40, cls20, box20]
+        outs = self.m.output_names[self.mn]
+        shp = self.m.output_shapes[self.mn]
         self.quants = self.m.output_quants[self.mn]
-        assert [self.m.output_shapes[self.mn][n][-1] for n in self.outs] == [80, 64] * 3, 'unexpected YOLOv8 head layout'
+        # pair class/box heads by grid size (output order differs between model builds)
+        self.heads = [(next(k for k in outs if shp[k][1] == g and shp[k][-1] == 80),
+                       next(k for k in outs if shp[k][1] == g and shp[k][-1] == 64), 640 // g) for g in (80, 40, 20)]
         self.scales = {k: (q.scale.astype(np.float32) if int(q.quant_type) == 2 else None) for k, q in self.quants.items()}
         self.fxB = None  # px*m, from camera_info
         self.acc, self.t_acc = [], time.perf_counter()
@@ -69,10 +72,9 @@ class StereoYolo(Node):
         h, w = y.shape
         out = self.m.run({self.mn: {self.inp: letterbox_nv12(y, uv)}})[self.mn]
         B, S, I = [], [], []
-        for i, stride in enumerate([8, 16, 32]):
-            bn = self.outs[2 * i + 1]
-            # own dequant: utils.dequantize_tensor skips SCALE (=2) outputs, leaving the int32 box head raw
-            b, ids, s = decode_yolov8_level(out[self.outs[2 * i]], out[bn], self.scales[bn], stride, self.score)
+        for cn, bn, stride in self.heads:
+            # own dequant: utils.dequantize_tensor skips SCALE (=2) outputs, leaving an int32 box head raw
+            b, ids, s = decode_yolov8_level(out[cn], out[bn], self.scales[bn], stride, self.score)
             B.append(b); S.append(s); I.append(ids)
         B, S, I = np.concatenate(B), np.concatenate(S), np.concatenate(I)
         keep = nms(B, S, I, self.nms)
