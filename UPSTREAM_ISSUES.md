@@ -68,3 +68,8 @@ camera: RDK Stereo Camera GS130W. Found 2026-11-25/26. Each entry: what, evidenc
 - `rdkos_info` without sudo prints "Permission denied" for cpufreq lines.
 - Python small-op overhead on loaded A55 cores: `matchTemplate` 15x15 vs 15x275 ~1.3 ms, `ndarray.std` on
   225 px ~0.7 ms (load ~4.7 with camera + jpeg + websocket + node).
+
+## Our own limits (for the README, not upstream)
+- Transparent objects: background through the object gives wrong/low NCC; mitigated with more patches + NCC 0.75.
+- Python pipeline ~5-7 fps with YOLO11m (yolo ~73 ms incl. pre/post, stereo ~80 ms for one box under load);
+  next step a C++ node on hobot zero-copy (hbmem) messages.
