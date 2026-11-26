@@ -183,9 +183,11 @@ def hil_architecture(mode):
         out.append(f'<rect x="{x}" y="12" width="{w}" height="{H - 24}" rx="14" fill="none" stroke="{t["axis"]}" stroke-width="2" stroke-dasharray="8 6"/>')
         out.append(f'<text x="{x + 18}" y="44" font-size="18" font-weight="700" fill="{t["ink2"]}">{label}</text>')
 
-    def box(x, y, w, h, title, sub, hi=False):
+    dash = ' stroke-dasharray="9 6"'
+
+    def box(x, y, w, h, title, sub, hi=False, built=True):
         stroke = t['hi'] if hi else t['edge']
-        out.append(f'<rect x="{x}" y="{y}" width="{w}" height="{h}" rx="12" fill="{t["box"]}" stroke="{stroke}" stroke-width="{3.5 if hi else 2}"/>')
+        out.append(f'<rect x="{x}" y="{y}" width="{w}" height="{h}" rx="12" fill="{t["box"]}" stroke="{stroke}" stroke-width="{3.5 if hi else 2}"{"" if built else dash}/>')
         out.append(f'<text x="{x + w / 2}" y="{y + h / 2 - 4}" font-size="20" font-weight="600" fill="{t["ink"]}" text-anchor="middle">{title}</text>')
         out.append(f'<text x="{x + w / 2}" y="{y + h / 2 + 22}" font-size="16" fill="{t["ink2"]}" text-anchor="middle">{sub}</text>')
 
@@ -197,11 +199,11 @@ def hil_architecture(mode):
 
     box(36, 70, 352, 96, 'Webots + SUMO world', 'city / SF, traffic, pedestrians')
     box(36, 214, 352, 96, 'ros_bridge', 'stereo 640x352, 14 Hz, watchdog')
-    box(36, 400, 352, 110, 'Scorer (ground truth)', 'depth AbsRel, stop gap, collisions')
-    box(540, 214, 200, 96, 'hil_input', 'pair -> NV12 stereo')
+    box(36, 400, 352, 110, 'Scorer (ground truth)', 'depth check built; scenarios next')
+    box(540, 214, 200, 96, 'hil_input', 'pair -> NV12 stereo', built=False)
     box(790, 90, 340, 100, 'stereo_yolo', 'YOLO11m on BPU + box distance', hi=True)
-    box(790, 214, 340, 96, 'StereoNet (BPU)', 'dense depth, 2nd workload')
-    box(790, 340, 340, 96, 'planner + safety', 'ACC / emergency brake, e-stop', hi=True)
+    box(790, 214, 340, 96, 'StereoNet (BPU)', 'dense depth, 2nd workload', built=False)
+    box(790, 340, 340, 96, 'planner + safety', 'ACC / emergency brake, e-stop', hi=True, built=False)
     edge([(212, 166), (212, 212)])
     edge([(388, 262), (538, 262)], 'stereo pair', 463, 250)
     edge([(740, 240), (765, 240), (765, 140), (788, 140)])
@@ -212,9 +214,53 @@ def hil_architecture(mode):
     edge([(788, 388), (300, 388), (300, 312)], 'cmd_drive (Ackermann, 15 Hz)', 560, 378)
     edge([(150, 312), (150, 398)], 'GT depth + odom', 160, 360, 'start')
     edge([(810, 310), (810, 324), (752, 324), (752, 470), (390, 470)], 'board depth', 560, 460)
-    out.append(f'<text x="36" y="540" font-size="16" fill="{t["ink2"]}">Ground truth only reaches the scorer, never the board. Wi-Fi 5 GHz now, Ethernet planned (risk 1).</text>')
+    out.append(f'<text x="36" y="540" font-size="16" fill="{t["ink2"]}">Dashed = planned. Ground truth only reaches the scorer, never the board.</text>')
     out.append('</svg>')
     open(os.path.join(OUT, f'hil_architecture_{mode}.svg'), 'w').write('\n'.join(out))
+
+
+def decision_flow(mode):
+    """Planned planner + safety logic, evaluated every control cycle."""
+    t = THEME[mode]
+    W, H = 1000, 760
+    out = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" viewBox="0 0 {W} {H}" '
+           f'font-family="-apple-system,Segoe UI,Helvetica,Arial,sans-serif">',
+           f'<rect width="{W}" height="{H}" rx="14" fill="{t["bg"]}"/>',
+           f'<defs><marker id="a" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">'
+           f'<path d="M0,0 L12,6 L0,12 z" fill="{t["edge"]}"/></marker></defs>']
+
+    def text(x, y, s, size=19, color=None, weight=400, anchor='middle'):
+        out.append(f'<text x="{x}" y="{y}" font-size="{size}" font-weight="{weight}" fill="{color or t["ink"]}" text-anchor="{anchor}">{s}</text>')
+
+    def rect(y, label, x=60, w=420, stroke=None, rx=12):
+        out.append(f'<rect x="{x}" y="{y}" width="{w}" height="62" rx="{rx}" fill="{t["box"]}" stroke="{stroke or t["edge"]}" stroke-width="2.5"/>')
+        text(x + w / 2, y + 38, label, weight=600)
+
+    def diamond(cy, label):
+        out.append(f'<path d="M270,{cy - 46} L500,{cy} L270,{cy + 46} L40,{cy} z" fill="{t["box"]}" stroke="{t["hi"]}" stroke-width="2.5"/>')
+        text(270, cy + 7, label, size=18, weight=600)
+
+    def edge(x1, y1, x2, y2, label='', lx=0, ly=0):
+        out.append(f'<path d="M{x1},{y1} L{x2},{y2}" stroke="{t["edge"]}" stroke-width="2.5" fill="none" marker-end="url(#a)"/>')
+        if label:
+            text(lx, ly, label, size=16, color=t['ink2'])
+
+    rect(24, 'New control cycle (15 Hz)', rx=31)
+    steps = [(160, 'E-stop pressed?', 'FULL BRAKE, stay latched'),
+             (282, 'No perception for 0.3 s?', 'BRAKE'),
+             (404, 'Time to collision too short?', 'EMERGENCY BRAKE'),
+             (526, 'Object ahead in my lane?', 'FOLLOW: keep a 2.0 s gap')]
+    edge(270, 86, 270, 112)
+    for i, (cy, q, action) in enumerate(steps):
+        diamond(cy, q)
+        edge(500, cy, 598, cy, 'yes', 548, cy - 10)
+        rect(cy - 31, action, x=600, w=360, stroke=t['s2'] if i < 3 else t['s1'])
+        edge(270, cy + 46, 270, (steps[i + 1][0] - 46) if i < 3 else 610, 'no', 296, cy + 66)
+    rect(612, 'CRUISE at the set speed (max 30 km/h)', x=60, w=420, stroke=t['s1'])
+    text(24, 712, 'Planned logic for Stage 3. The time-to-collision limit will be tuned in the simulator.', 17, t['ink2'], anchor='start')
+    text(24, 738, 'Already built on the laptop side: no command for 0.5 s gives full brake, even if the board dies.', 17, t['ink2'], anchor='start')
+    out.append('</svg>')
+    open(os.path.join(OUT, f'decision_flow_{mode}.svg'), 'w').write('\n'.join(out))
 
 
 def ros_graph(mode):
@@ -253,7 +299,7 @@ def ros_graph(mode):
     # laptop
     node(60, 56, 290, 'ros_bridge', 'Webots ego car + watchdog')
     topic(370, 63, 260, '/hil/ground_truth/*', 'depth 32FC1 + odom, 14 Hz')
-    node(650, 56, 300, 'scorer', 'check_depth + scenarios', built=True)
+    node(650, 56, 300, 'scorer', 'depth built; scenarios next', built=True)
     edge([(350, 93), (368, 93)]); edge([(630, 93), (648, 93)])
     topic(40, 168, 460, '/hil/stereo/{left,right}/image_raw', 'Image bgr8 640x352, 14 Hz (+ camera_info)')
     edge([(205, 130), (205, 166)])
@@ -303,4 +349,5 @@ if __name__ == '__main__':
         architecture(m)
         hil_architecture(m)
         ros_graph(m)
+        decision_flow(m)
     print('figures written to', os.path.abspath(OUT))

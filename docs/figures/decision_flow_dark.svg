@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="760" viewBox="0 0 1000 760" font-family="-apple-system,Segoe UI,Helvetica,Arial,sans-serif">
+<rect width="1000" height="760" rx="14" fill="#0d1117"/>
+<defs><marker id="a" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0,0 L12,6 L0,12 z" fill="#6e7681"/></marker></defs>
+<rect x="60" y="24" width="420" height="62" rx="31" fill="#161b22" stroke="#6e7681" stroke-width="2.5"/>
+<text x="270.0" y="62" font-size="19" font-weight="600" fill="#efefef" text-anchor="middle">New control cycle (15 Hz)</text>
+<path d="M270,86 L270,112" stroke="#6e7681" stroke-width="2.5" fill="none" marker-end="url(#a)"/>
+<path d="M270,114 L500,160 L270,206 L40,160 z" fill="#161b22" stroke="#338ced" stroke-width="2.5"/>
+<text x="270" y="167" font-size="18" font-weight="600" fill="#efefef" text-anchor="middle">E-stop pressed?</text>
+<path d="M500,160 L598,160" stroke="#6e7681" stroke-width="2.5" fill="none" marker-end="url(#a)"/>
+<text x="548" y="150" font-size="16" font-weight="400" fill="#9c9c9c" text-anchor="middle">yes</text>
+<rect x="600" y="129" width="360" height="62" rx="12" fill="#161b22" stroke="#e76624" stroke-width="2.5"/>
+<text x="780.0" y="167" font-size="19" font-weight="600" fill="#efefef" text-anchor="middle">FULL BRAKE, stay latched</text>
+<path d="M270,206 L270,236" stroke="#6e7681" stroke-width="2.5" fill="none" marker-end="url(#a)"/>
+<text x="296" y="226" font-size="16" font-weight="400" fill="#9c9c9c" text-anchor="middle">no</text>
+<path d="M270,236 L500,282 L270,328 L40,282 z" fill="#161b22" stroke="#338ced" stroke-width="2.5"/>
+<text x="270" y="289" font-size="18" font-weight="600" fill="#efefef" text-anchor="middle">No perception for 0.3 s?</text>
+<path d="M500,282 L598,282" stroke="#6e7681" stroke-width="2.5" fill="none" marker-end="url(#a)"/>
+<text x="548" y="272" font-size="16" font-weight="400" fill="#9c9c9c" text-anchor="middle">yes</text>
+<rect x="600" y="251" width="360" height="62" rx="12" fill="#161b22" stroke="#e76624" stroke-width="2.5"/>
+<text x="780.0" y="289" font-size="19" font-weight="600" fill="#efefef" text-anchor="middle">BRAKE</text>
+<path d="M270,328 L270,358" stroke="#6e7681" stroke-width="2.5" fill="none" marker-end="url(#a)"/>
+<text x="296" y="348" font-size="16" font-weight="400" fill="#9c9c9c" text-anchor="middle">no</text>
+<path d="M270,358 L500,404 L270,450 L40,404 z" fill="#161b22" stroke="#338ced" stroke-width="2.5"/>
+<text x="270" y="411" font-size="18" font-weight="600" fill="#efefef" text-anchor="middle">Time to collision too short?</text>
+<path d="M500,404 L598,404" stroke="#6e7681" stroke-width="2.5" fill="none" marker-end="url(#a)"/>
+<text x="548" y="394" font-size="16" font-weight="400" fill="#9c9c9c" text-anchor="middle">yes</text>
+<rect x="600" y="373" width="360" height="62" rx="12" fill="#161b22" stroke="#e76624" stroke-width="2.5"/>
+<text x="780.0" y="411" font-size="19" font-weight="600" fill="#efefef" text-anchor="middle">EMERGENCY BRAKE</text>
+<path d="M270,450 L270,480" stroke="#6e7681" stroke-width="2.5" fill="none" marker-end="url(#a)"/>
+<text x="296" y="470" font-size="16" font-weight="400" fill="#9c9c9c" text-anchor="middle">no</text>
+<path d="M270,480 L500,526 L270,572 L40,526 z" fill="#161b22" stroke="#338ced" stroke-width="2.5"/>
+<text x="270" y="533" font-size="18" font-weight="600" fill="#efefef" text-anchor="middle">Object ahead in my lane?</text>
+<path d="M500,526 L598,526" stroke="#6e7681" stroke-width="2.5" fill="none" marker-end="url(#a)"/>
+<text x="548" y="516" font-size="16" font-weight="400" fill="#9c9c9c" text-anchor="middle">yes</text>
+<rect x="600" y="495" width="360" height="62" rx="12" fill="#161b22" stroke="#338ced" stroke-width="2.5"/>
+<text x="780.0" y="533" font-size="19" font-weight="600" fill="#efefef" text-anchor="middle">FOLLOW: keep a 2.0 s gap</text>
+<path d="M270,572 L270,610" stroke="#6e7681" stroke-width="2.5" fill="none" marker-end="url(#a)"/>
+<text x="296" y="592" font-size="16" font-weight="400" fill="#9c9c9c" text-anchor="middle">no</text>
+<rect x="60" y="612" width="420" height="62" rx="12" fill="#161b22" stroke="#338ced" stroke-width="2.5"/>
+<text x="270.0" y="650" font-size="19" font-weight="600" fill="#efefef" text-anchor="middle">CRUISE at the set speed (max 30 km/h)</text>
+<text x="24" y="712" font-size="17" font-weight="400" fill="#9c9c9c" text-anchor="start">Planned logic for Stage 3. The time-to-collision limit will be tuned in the simulator.</text>
+<text x="24" y="738" font-size="17" font-weight="400" fill="#9c9c9c" text-anchor="start">Already built on the laptop side: no command for 0.5 s gives full brake, even if the board dies.</text>
+</svg>

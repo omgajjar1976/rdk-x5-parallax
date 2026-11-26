@@ -13,7 +13,7 @@
 <text x="500.0" y="110" font-size="15" fill="#9c9c9c" text-anchor="middle">depth 32FC1 + odom, 14 Hz</text>
 <rect x="650" y="56" width="300" height="74" rx="12" fill="#161b22" stroke="#6e7681" stroke-width="2"/>
 <text x="800.0" y="88" font-size="21" font-weight="700" fill="#efefef" text-anchor="middle">scorer</text>
-<text x="800.0" y="113" font-size="16" fill="#9c9c9c" text-anchor="middle">check_depth + scenarios</text>
+<text x="800.0" y="113" font-size="16" fill="#9c9c9c" text-anchor="middle">depth built; scenarios next</text>
 <path d="M350,93 L368,93" fill="none" stroke="#6e7681" stroke-width="2.2" marker-end="url(#a)"/>
 <path d="M630,93 L648,93" fill="none" stroke="#6e7681" stroke-width="2.2" marker-end="url(#a)"/>
 <rect x="40" y="168" width="460" height="60" rx="30" fill="#0d1117" stroke="#338ced" stroke-width="2"/>

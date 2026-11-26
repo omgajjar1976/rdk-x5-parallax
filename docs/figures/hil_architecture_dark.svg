@@ -13,17 +13,17 @@
 <text x="212.0" y="284.0" font-size="16" fill="#9c9c9c" text-anchor="middle">stereo 640x352, 14 Hz, watchdog</text>
 <rect x="36" y="400" width="352" height="110" rx="12" fill="#161b22" stroke="#6e7681" stroke-width="2"/>
 <text x="212.0" y="451.0" font-size="20" font-weight="600" fill="#efefef" text-anchor="middle">Scorer (ground truth)</text>
-<text x="212.0" y="477.0" font-size="16" fill="#9c9c9c" text-anchor="middle">depth AbsRel, stop gap, collisions</text>
-<rect x="540" y="214" width="200" height="96" rx="12" fill="#161b22" stroke="#6e7681" stroke-width="2"/>
+<text x="212.0" y="477.0" font-size="16" fill="#9c9c9c" text-anchor="middle">depth check built; scenarios next</text>
+<rect x="540" y="214" width="200" height="96" rx="12" fill="#161b22" stroke="#6e7681" stroke-width="2" stroke-dasharray="9 6"/>
 <text x="640.0" y="258.0" font-size="20" font-weight="600" fill="#efefef" text-anchor="middle">hil_input</text>
 <text x="640.0" y="284.0" font-size="16" fill="#9c9c9c" text-anchor="middle">pair -> NV12 stereo</text>
 <rect x="790" y="90" width="340" height="100" rx="12" fill="#161b22" stroke="#338ced" stroke-width="3.5"/>
 <text x="960.0" y="136.0" font-size="20" font-weight="600" fill="#efefef" text-anchor="middle">stereo_yolo</text>
 <text x="960.0" y="162.0" font-size="16" fill="#9c9c9c" text-anchor="middle">YOLO11m on BPU + box distance</text>
-<rect x="790" y="214" width="340" height="96" rx="12" fill="#161b22" stroke="#6e7681" stroke-width="2"/>
+<rect x="790" y="214" width="340" height="96" rx="12" fill="#161b22" stroke="#6e7681" stroke-width="2" stroke-dasharray="9 6"/>
 <text x="960.0" y="258.0" font-size="20" font-weight="600" fill="#efefef" text-anchor="middle">StereoNet (BPU)</text>
 <text x="960.0" y="284.0" font-size="16" fill="#9c9c9c" text-anchor="middle">dense depth, 2nd workload</text>
-<rect x="790" y="340" width="340" height="96" rx="12" fill="#161b22" stroke="#338ced" stroke-width="3.5"/>
+<rect x="790" y="340" width="340" height="96" rx="12" fill="#161b22" stroke="#338ced" stroke-width="3.5" stroke-dasharray="9 6"/>
 <text x="960.0" y="384.0" font-size="20" font-weight="600" fill="#efefef" text-anchor="middle">planner + safety</text>
 <text x="960.0" y="410.0" font-size="16" fill="#9c9c9c" text-anchor="middle">ACC / emergency brake, e-stop</text>
 <path d="M212,166 L212,212" fill="none" stroke="#6e7681" stroke-width="2.5" marker-end="url(#a)"/>
@@ -41,5 +41,5 @@
 <text x="160" y="360" font-size="16" fill="#9c9c9c" text-anchor="start">GT depth + odom</text>
 <path d="M810,310 L810,324 L752,324 L752,470 L390,470" fill="none" stroke="#6e7681" stroke-width="2.5" marker-end="url(#a)"/>
 <text x="560" y="460" font-size="16" fill="#9c9c9c" text-anchor="middle">board depth</text>
-<text x="36" y="540" font-size="16" fill="#9c9c9c">Ground truth only reaches the scorer, never the board. Wi-Fi 5 GHz now, Ethernet planned (risk 1).</text>
+<text x="36" y="540" font-size="16" fill="#9c9c9c">Dashed = planned. Ground truth only reaches the scorer, never the board.</text>
 </svg>

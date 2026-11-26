@@ -269,14 +269,57 @@ Everything below happened on this board while building the project.
 
 ## Stage 2: Stereo HIL
 
-Next, the board drives a **simulated car**. Webots + SUMO on the laptop render a stereo pair with the GS130W's baseline and
-field of view. The RDK X5 runs YOLO11m and StereoNet on the BPU, decides (adaptive cruise, emergency brake) and sends back
-Ackermann commands. Every decision is scored against the simulator's pixel-exact ground truth.
+**Plan:** the board will control a **simulated car**. Webots + SUMO on the laptop render a stereo pair; the RDK X5 will
+run its AI on the BPU, decide when to follow or brake, and send commands back. The simulator's pixel-exact ground truth
+scores the result. It's a perception and braking **test bench**, not a self-driving car.
+
+![City world: pedestrians on a crossing, a car ahead, and both stereo views inset](docs/images/09_sim_city.jpg)
+
+| ✅ Built and checked today | 🔨 Planned for Stage 3 |
+|---|---|
+| Stage 1 node on the board, **real camera**: YOLO11m on the BPU + distance per box | `hil_input`: feed simulator images to that node on the board |
+| Two simulator worlds with traffic; a pedestrian crossing in the city test | StereoNet on the BPU as the second workload |
+| `ros_bridge`: stereo out, drive commands in, **full brake after 0.5 s of silence** | Planner and safety nodes (adaptive cruise, emergency brake, e-stop) |
+| Pixel-exact depth ground truth and a depth checker (6 injected faults caught, 2 good inputs pass) | Scenario scorer (stopping gap, collisions), speed-up to 10 Hz |
+| Humble ↔ Jazzy messaging, tested from a Humble container | The first run with the **board in the loop** |
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/figures/hil_architecture_dark.svg">
-  <img src="docs/figures/hil_architecture_light.svg" alt="Stereo HIL data flow between the laptop simulator and the RDK X5">
+  <img src="docs/figures/hil_architecture_light.svg" alt="Planned stereo HIL data flow; dashed blocks are not built yet">
 </picture>
+
+<details>
+<summary><b>The problem to solve: today the test car drives into the pedestrian</b></summary>
+
+No perception or planner is in the loop yet; a scripted controller drives straight at 10 km/h.
+
+![Three frames ending with the car driving into a pedestrian](docs/images/11_sim_crossing_no_brain.jpg)
+
+</details>
+
+<details>
+<summary><b>Ground truth: camera view and exact depth</b></summary>
+
+![Left camera view beside its ground-truth depth image](docs/images/12_sim_view_and_ground_truth.jpg)
+
+</details>
+
+<details>
+<summary><b>Second world: San Francisco streets</b></summary>
+
+![San Francisco world with traffic](docs/images/10_sim_sf.jpg)
+
+</details>
+
+<details>
+<summary><b>Planned decision logic</b></summary>
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/figures/decision_flow_dark.svg">
+  <img src="docs/figures/decision_flow_light.svg" alt="Planned decision flow">
+</picture>
+
+</details>
 
 | Document | Contents |
 |---|---|
