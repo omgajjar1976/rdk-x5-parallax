@@ -17,6 +17,19 @@ error by range, stopping gap, collisions, latency.
 The real GS130W stays in the loop for **real-world accuracy runs** (tape measure on 60 cm floor tiles), so the project
 measures both sim-to-board and real-world performance with the same code.
 
+## Operating scenario and constraints
+
+| | |
+|---|---|
+| **Scenario** | Urban driving in two Webots worlds (city with a pedestrian crossing, San Francisco streets), daytime, dry roads, SUMO traffic (up to ~60 cars) and crossing pedestrians |
+| **Vehicle limits** | Speed ≤ 30 km/h, steering ≤ 0.5 rad (clamped in the bridge); full brake if no command arrives for 0.5 s |
+| **Compute** | All perception and decisions on the RDK X5 (4 GB, 3.0 GiB usable, one BPU shared by YOLO11m and StereoNet). The laptop only runs the simulator and scoring |
+| **Camera model** | Stereo pair 640x352, 80 mm baseline, 96.8° horizontal field of view, ideal pinhole (no lens distortion or sensor noise in the simulator) |
+| **Link** | ROS 2 over Wi-Fi 5 GHz (~150 Mbit/s for raw stereo at 14 Hz); direct Ethernet if Wi-Fi can't keep up |
+| **Simulator speed** | 0.81–0.95x real time with traffic (measured); timing is measured in simulator time |
+| **Real-world runs** | Indoors, GS130W on the stand, distances on 60 cm floor tiles (0.6–2.4 m) |
+| **Safety** | Only the simulated car moves; e-stop topic on the board plus the bridge watchdog |
+
 ## The simulated world
 
 Left camera frames from the city world (640x352): pedestrians step onto the crossing while traffic moves around the ego
