@@ -49,6 +49,7 @@ class StereoYolo(Node):
         assert [self.m.output_shapes[self.mn][n][-1] for n in self.outs] == [80, 64] * 3, 'unexpected YOLOv8 head layout'
         self.scales = {k: (q.scale.astype(np.float32) if int(q.quant_type) == 2 else None) for k, q in self.quants.items()}
         self.fxB = None  # px*m, from camera_info
+        self.acc, self.t_acc = [], time.perf_counter()
         self.create_subscription(CameraInfo, '/image_combine_raw/right/camera_info', self.on_info, 1)
         # depth 1: newest frame, no backlog; RELIABLE because best-effort drops whole 4 MB frames (got none)
         latest = QoSProfile(depth=1, history=HistoryPolicy.KEEP_LAST, reliability=ReliabilityPolicy.RELIABLE)
@@ -111,11 +112,18 @@ class StereoYolo(Node):
             out.targets.append(t)
         self.pub.publish(out)
         t3 = time.perf_counter()
-        self.pub_perf.publish(String(data=json.dumps({
-            'unpack_ms': round(1e3 * (t1 - t0), 2), 'yolo_ms': round(1e3 * (t2 - t1), 2),
-            'stereo_ms': round(1e3 * (t3 - t2), 2), 'total_ms': round(1e3 * (t3 - t0), 2),
-            'n': len(boxes),
-            'age_ms': round((self.get_clock().now().nanoseconds - (msg.header.stamp.sec * 10**9 + msg.header.stamp.nanosec)) / 1e6, 1)})))
+        age = (self.get_clock().now().nanoseconds - (msg.header.stamp.sec * 10**9 + msg.header.stamp.nanosec)) / 1e6
+        p = {'unpack_ms': 1e3 * (t1 - t0), 'yolo_ms': 1e3 * (t2 - t1), 'stereo_ms': 1e3 * (t3 - t2),
+             'total_ms': 1e3 * (t3 - t0), 'age_ms': age, 'n': len(boxes)}
+        self.pub_perf.publish(String(data=json.dumps({k: round(v, 2) for k, v in p.items()})))
+        self.acc.append(p)
+        if len(self.acc) == 30:   # one summary line per 30 frames
+            dt = time.perf_counter() - self.t_acc
+            mean = {k: np.mean([a[k] for a in self.acc]) for k in p}
+            self.get_logger().info(f"{30 / dt:.1f} fps | yolo {mean['yolo_ms']:.1f} ms, stereo {mean['stereo_ms']:.1f} ms, "
+                                   f"total {mean['total_ms']:.1f} ms, frame age {mean['age_ms']:.0f} ms, objects {mean['n']:.1f} | "
+                                   + ', '.join(f'{r.type}' for t in out.targets for r in t.rois))
+            self.acc, self.t_acc = [], time.perf_counter()
 
 
 def main():
