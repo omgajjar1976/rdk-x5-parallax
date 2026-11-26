@@ -4,6 +4,7 @@
 Numbers are the measured values from the README tables; edit DATA below, not the PNGs.
 """
 import os
+import re
 
 import matplotlib
 matplotlib.use('Agg')
@@ -137,8 +138,8 @@ def architecture(mode):
     out = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" viewBox="0 0 {W} {H}" '
            f'font-family="-apple-system,Segoe UI,Helvetica,Arial,sans-serif">',
            f'<rect width="{W}" height="{H}" rx="14" fill="{t["bg"]}"/>',
-           f'<defs><marker id="a" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">'
-           f'<path d="M0,0 L12,6 L0,12 z" fill="{t["edge"]}"/></marker></defs>']
+           f'<defs><marker id="a" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="10" refX="10" refY="5" orient="auto">'
+           f'<path d="M0,0 L11,5 L0,10 z" fill="{t["edge"]}"/></marker></defs>']
 
     def edge(points, label, lx, ly, anchor='middle'):
         d = 'M' + ' L'.join(f'{x},{y}' for x, y in points)
@@ -172,49 +173,50 @@ def architecture(mode):
 def hil_architecture(mode):
     """Stage 2/3 hardware-in-the-loop data flow: laptop sim <-> RDK X5."""
     t = THEME[mode]
-    W, H = 1200, 560
+    W, H = 1200, 620
     out = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" viewBox="0 0 {W} {H}" '
            f'font-family="-apple-system,Segoe UI,Helvetica,Arial,sans-serif">',
            f'<rect width="{W}" height="{H}" rx="14" fill="{t["bg"]}"/>',
-           f'<defs><marker id="a" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">'
-           f'<path d="M0,0 L12,6 L0,12 z" fill="{t["edge"]}"/></marker></defs>']
-    # two zones
-    for x, w, label in ((12, 400, 'LAPTOP  (Ubuntu 24.04, ROS 2 Jazzy)'), (500, 688, 'RDK X5  (RDK OS 3.5.0, ROS 2 Humble / TROS)')):
+           f'<defs><marker id="a" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="10" refX="10" refY="5" orient="auto">'
+           f'<path d="M0,0 L11,5 L0,10 z" fill="{t["edge"]}"/></marker></defs>']
+    for x, w, label in ((12, 364, 'LAPTOP  (ROS 2 Jazzy)'), (448, 740, 'RDK X5  (ROS 2 Humble / TROS)')):
         out.append(f'<rect x="{x}" y="12" width="{w}" height="{H - 24}" rx="14" fill="none" stroke="{t["axis"]}" stroke-width="2" stroke-dasharray="8 6"/>')
-        out.append(f'<text x="{x + 18}" y="44" font-size="18" font-weight="700" fill="{t["ink2"]}">{label}</text>')
-
+        out.append(f'<text x="{x + 18}" y="42" font-size="18" font-weight="700" fill="{t["ink2"]}">{label}</text>')
     dash = ' stroke-dasharray="9 6"'
 
     def box(x, y, w, h, title, sub, hi=False, built=True):
         stroke = t['hi'] if hi else t['edge']
         out.append(f'<rect x="{x}" y="{y}" width="{w}" height="{h}" rx="12" fill="{t["box"]}" stroke="{stroke}" stroke-width="{3.5 if hi else 2}"{"" if built else dash}/>')
         out.append(f'<text x="{x + w / 2}" y="{y + h / 2 - 4}" font-size="20" font-weight="600" fill="{t["ink"]}" text-anchor="middle">{title}</text>')
-        out.append(f'<text x="{x + w / 2}" y="{y + h / 2 + 22}" font-size="16" fill="{t["ink2"]}" text-anchor="middle">{sub}</text>')
+        out.append(f'<text x="{x + w / 2}" y="{y + h / 2 + 22}" font-size="15" fill="{t["ink2"]}" text-anchor="middle">{sub}</text>')
 
-    def edge(points, label='', lx=0, ly=0, anchor='middle'):
+    def text(x, y, label, anchor='middle'):
+        out.append(f'<text x="{x}" y="{y}" font-size="16" fill="{t["ink2"]}" text-anchor="{anchor}">{label}</text>')
+
+    def edge(points):
         d = 'M' + ' L'.join(f'{x},{y}' for x, y in points)
         out.append(f'<path d="{d}" fill="none" stroke="{t["edge"]}" stroke-width="2.5" marker-end="url(#a)"/>')
-        if label:
-            out.append(f'<text x="{lx}" y="{ly}" font-size="16" fill="{t["ink2"]}" text-anchor="{anchor}">{label}</text>')
 
-    box(36, 70, 352, 96, 'Webots + SUMO world', 'city / SF, traffic, pedestrians')
-    box(36, 214, 352, 96, 'ros_bridge', 'stereo 640x352, 14 Hz, watchdog')
-    box(36, 400, 352, 110, 'Scorer (ground truth)', 'depth check built; scenarios next')
-    box(540, 214, 200, 96, 'hil_input', 'pair -> NV12 stereo', built=False)
-    box(790, 90, 340, 100, 'stereo_yolo', 'YOLO11m on BPU + box distance', hi=True)
-    box(790, 214, 340, 96, 'StereoNet (BPU)', 'dense depth, 2nd workload', built=False)
-    box(790, 340, 340, 96, 'planner + safety', 'ACC / emergency brake, e-stop', hi=True, built=False)
-    edge([(212, 166), (212, 212)])
-    edge([(388, 262), (538, 262)], 'stereo pair', 463, 250)
-    edge([(740, 240), (765, 240), (765, 140), (788, 140)])
-    edge([(740, 262), (788, 262)])
-    edge([(1130, 140), (1152, 140), (1152, 388), (1132, 388)])
-    out.append(f'<text x="1174" y="264" font-size="16" fill="{t["ink2"]}" text-anchor="middle" transform="rotate(90 1174 264)">boxes + metres</text>')
-    edge([(960, 310), (960, 338)], 'depth', 975, 330, 'start')
-    edge([(788, 388), (300, 388), (300, 312)], 'cmd_drive (Ackermann, 15 Hz)', 560, 378)
-    edge([(150, 312), (150, 398)], 'GT depth + odom', 160, 360, 'start')
-    edge([(810, 310), (810, 324), (752, 324), (752, 470), (390, 470)], 'board depth', 560, 460)
-    out.append(f'<text x="36" y="540" font-size="16" fill="{t["ink2"]}">Dashed = planned. Ground truth only reaches the scorer, never the board.</text>')
+    box(32, 112, 324, 90, 'Webots + SUMO world', 'city / SF, traffic, pedestrians')
+    box(32, 246, 324, 100, 'ros_bridge', 'stereo 640x352, 14 Hz, watchdog')
+    box(32, 484, 324, 90, 'Scorer (ground truth)', 'depth check built; scenarios next')
+    box(498, 260, 160, 92, 'hil_input', 'to NV12', built=False)
+    box(708, 140, 272, 92, 'stereo_yolo', 'YOLO11m on BPU + distance', hi=True)
+    box(708, 380, 272, 92, 'StereoNet', 'dense depth on BPU', built=False)
+    box(1030, 260, 146, 92, 'planner', '+ safety', hi=True, built=False)
+
+    edge([(194, 202), (194, 246)])                                   # world -> bridge
+    edge([(356, 320), (498, 320)]); text(412, 342, 'stereo'); text(412, 362, 'pair')
+    edge([(658, 290), (683, 290), (683, 186), (708, 186)])           # hil_input fan-out
+    edge([(658, 322), (683, 322), (683, 426), (708, 426)])
+    edge([(980, 186), (1005, 186), (1005, 290), (1030, 290)])        # fan-in to planner
+    edge([(980, 426), (1005, 426), (1005, 322), (1030, 322)])
+    text(1014, 178, 'boxes + metres', 'start'); text(1014, 448, 'depth', 'start')
+    edge([(1150, 260), (1150, 74), (412, 74), (412, 272), (356, 272)])  # command returns over the top
+    text(757, 98, 'cmd_drive (Ackermann, 15 Hz)')
+    edge([(194, 346), (194, 484)]); text(206, 411, 'ground truth:', 'start'); text(206, 432, 'depth + odom', 'start')
+    edge([(844, 472), (844, 529), (356, 529)]); text(600, 519, 'board depth')
+    out.append(f'<text x="466" y="586" font-size="15" fill="{t["ink2"]}">Dashed = planned. Ground truth never reaches the board.</text>')
     out.append('</svg>')
     open(os.path.join(OUT, f'hil_architecture_{mode}.svg'), 'w').write('\n'.join(out))
 
@@ -226,8 +228,8 @@ def decision_flow(mode):
     out = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" viewBox="0 0 {W} {H}" '
            f'font-family="-apple-system,Segoe UI,Helvetica,Arial,sans-serif">',
            f'<rect width="{W}" height="{H}" rx="14" fill="{t["bg"]}"/>',
-           f'<defs><marker id="a" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">'
-           f'<path d="M0,0 L12,6 L0,12 z" fill="{t["edge"]}"/></marker></defs>']
+           f'<defs><marker id="a" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="10" refX="10" refY="5" orient="auto">'
+           f'<path d="M0,0 L11,5 L0,10 z" fill="{t["edge"]}"/></marker></defs>']
 
     def text(x, y, s, size=19, color=None, weight=400, anchor='middle'):
         out.append(f'<text x="{x}" y="{y}" font-size="{size}" font-weight="{weight}" fill="{color or t["ink"]}" text-anchor="{anchor}">{s}</text>')
@@ -270,8 +272,8 @@ def ros_graph(mode):
     out = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" viewBox="0 0 {W} {H}" '
            f'font-family="-apple-system,Segoe UI,Helvetica,Arial,sans-serif">',
            f'<rect width="{W}" height="{H}" rx="14" fill="{t["bg"]}"/>',
-           f'<defs><marker id="a" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">'
-           f'<path d="M0,0 L12,6 L0,12 z" fill="{t["edge"]}"/></marker></defs>']
+           f'<defs><marker id="a" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="10" refX="10" refY="5" orient="auto">'
+           f'<path d="M0,0 L11,5 L0,10 z" fill="{t["edge"]}"/></marker></defs>']
     mono = "ui-monospace,SFMono-Regular,Menlo,Consolas,monospace"
 
     def band(y, h, label):
@@ -297,36 +299,34 @@ def ros_graph(mode):
     band(10, 250, 'LAPTOP  (Jazzy)')
     band(276, 790, 'RDK X5  (Humble / TROS)')
     # laptop
-    node(60, 56, 290, 'ros_bridge', 'Webots ego car + watchdog')
-    topic(370, 63, 260, '/hil/ground_truth/*', 'depth 32FC1 + odom, 14 Hz')
-    node(650, 56, 300, 'scorer', 'depth built; scenarios next', built=True)
-    edge([(350, 93), (368, 93)]); edge([(630, 93), (648, 93)])
+    node(40, 56, 260, 'ros_bridge', 'Webots ego car + watchdog')
+    topic(348, 63, 254, '/hil/ground_truth/*', 'depth + odom, 14 Hz')
+    node(650, 56, 310, 'scorer', 'depth built; scenarios next')
+    edge([(300, 93), (348, 93)]); edge([(602, 93), (650, 93)])
     topic(40, 168, 460, '/hil/stereo/{left,right}/image_raw', 'Image bgr8 640x352, 14 Hz (+ camera_info)')
-    edge([(205, 130), (205, 166)])
+    edge([(170, 130), (170, 168)])
     # board
-    node(60, 316, 290, 'hil_input', 'pair to NV12 stereo', built=False)
-    edge([(205, 228), (205, 314)])
-    topic(40, 420, 460, '/image_combine_raw', 'Image nv12, left over right, 14 Hz')
-    edge([(205, 390), (205, 418)])
-    node(40, 520, 300, 'stereo_yolo', 'YOLO11m BPU + box distance', hi=True)
-    node(380, 520, 300, 'StereoNet', 'BPU dense depth', built=False)
-    node(720, 520, 250, 'websocket', 'browser view', built=True)
-    edge([(190, 480), (190, 518)]); edge([(440, 480), (530, 518)])
-    topic(30, 624, 330, '/stereo_yolo/detections', 'PerceptionTargets, 10 Hz+')
-    topic(380, 624, 300, 'StereoNet depth', 'Image depth, 10 Hz+')
-    edge([(190, 594), (190, 622)]); edge([(530, 594), (530, 622)])
-    edge([(345, 624), (345, 608), (845, 608), (845, 596)])
-    edge([(680, 640), (985, 640), (985, 132), (952, 132)])
-    node(40, 730, 290, 'planner', 'nearest object, ACC + brake', built=False, hi=True)
-    edge([(190, 684), (190, 728)]); edge([(530, 684), (530, 706), (300, 706), (300, 728)])
-    topic(350, 737, 260, '/hil/planner/cmd', 'Ackermann, 15 Hz')
-    node(640, 730, 300, 'safety', 'e-stop latch, limits', built=False, hi=True)
-    edge([(330, 767), (348, 767)]); edge([(610, 767), (638, 767)])
-    topic(640, 850, 300, '/hil/estop', 'Bool, latched, on demand')
-    edge([(790, 850), (790, 806)])
-    topic(250, 960, 470, '/hil/cmd_drive', 'AckermannDriveStamped, 15 Hz, 0.5 s watchdog')
-    edge([(700, 804), (700, 830), (600, 830), (600, 958)])
-    edge([(250, 990), (24, 990), (24, 93), (58, 93)])
+    node(70, 316, 320, 'hil_input', 'pair to NV12 stereo', built=False)
+    edge([(230, 228), (230, 316)])
+    topic(40, 420, 380, '/image_combine_raw', 'Image nv12, left over right, 14 Hz')
+    edge([(230, 390), (230, 420)])
+    node(70, 524, 320, 'stereo_yolo', 'YOLO11m BPU + box distance', hi=True)
+    node(440, 524, 300, 'StereoNet', 'BPU dense depth', built=False)
+    edge([(230, 480), (230, 524)]); edge([(420, 450), (590, 450), (590, 524)])
+    topic(70, 628, 320, '/stereo_yolo/detections', '10 Hz+, also to the web viewer')
+    topic(440, 628, 300, 'StereoNet depth', 'Image depth, 10 Hz+')
+    edge([(230, 598), (230, 628)]); edge([(590, 598), (590, 628)])
+    edge([(740, 658), (860, 658), (860, 130)])
+    node(40, 740, 290, 'planner', 'nearest object, ACC + brake', built=False, hi=True)
+    edge([(170, 688), (170, 740)]); edge([(590, 688), (590, 714), (290, 714), (290, 740)])
+    topic(380, 747, 250, '/hil/planner/cmd', 'Ackermann, 15 Hz')
+    node(680, 740, 280, 'safety', 'e-stop latch, limits', built=False, hi=True)
+    edge([(330, 777), (380, 777)]); edge([(630, 777), (680, 777)])
+    topic(750, 866, 220, '/hil/estop', 'Bool, latched')
+    edge([(860, 866), (860, 814)])
+    topic(190, 936, 470, '/hil/cmd_drive', 'AckermannDriveStamped, 15 Hz, 0.5 s watchdog')
+    edge([(720, 814), (720, 966), (660, 966)])
+    edge([(190, 966), (22, 966), (22, 93), (40, 93)])
     # legend
     ly = 1048
     out.append(f'<rect x="30" y="{ly - 18}" width="34" height="22" rx="6" fill="{t["box"]}" stroke="{t["edge"]}" stroke-width="2"/>')
@@ -341,6 +341,32 @@ def ros_graph(mode):
     open(os.path.join(OUT, f'ros_graph_{mode}.svg'), 'w').write('\n'.join(out))
 
 
+def check_layout(name):
+    """Fail on slanted arrows, arrows through a box, arrows crossing each other, or no room for an arrowhead."""
+    svg = open(os.path.join(OUT, name)).read()
+    boxes = [tuple(map(float, g)) for g in re.findall(
+        r'<rect x="([\d.]+)" y="([\d.]+)" width="([\d.]+)" height="([\d.]+)" rx="\d+" fill="#', svg)]
+    paths = [[tuple(map(float, p.split(','))) for p in d[1:].split(' L')]
+             for d in re.findall(r'<path d="(M[^"z]+)"[^>]*marker-end', svg)]
+    segs = [(i, a, b) for i, p in enumerate(paths) for a, b in zip(p, p[1:])]
+    bad = []
+    for i, p in enumerate(paths):
+        if abs(p[-1][0] - p[-2][0]) + abs(p[-1][1] - p[-2][1]) < 18:
+            bad.append(f'arrow {i} end too short {p}')
+    for i, a, b in segs:
+        if a[0] != b[0] and a[1] != b[1]:
+            bad.append(f'slanted {a}->{b}')
+        (x1, x2), (y1, y2) = sorted((a[0], b[0])), sorted((a[1], b[1]))
+        for x, y, w, h in boxes:
+            if x2 > x + 2 and x1 < x + w - 2 and y2 > y + 2 and y1 < y + h - 2:
+                bad.append(f'through box {a}->{b} box {(x, y, w, h)}')
+    for i, a, b in segs:
+        for j, c, d in segs:
+            if i != j and a[1] == b[1] and c[0] == d[0] and min(a[0], b[0]) < c[0] < max(a[0], b[0]) and min(c[1], d[1]) < a[1] < max(c[1], d[1]):
+                bad.append(f'cross: arrow {i} and {j} at {(c[0], a[1])}')
+    assert not bad, name + chr(10) + chr(10).join(bad)
+
+
 if __name__ == '__main__':
     for m in THEME:
         accuracy(m)
@@ -350,4 +376,7 @@ if __name__ == '__main__':
         hil_architecture(m)
         ros_graph(m)
         decision_flow(m)
-    print('figures written to', os.path.abspath(OUT))
+    for m in THEME:
+        for n in ('architecture', 'hil_architecture', 'ros_graph'):
+            check_layout(f'{n}_{m}.svg')
+    print('layout check passed; figures written to', os.path.abspath(OUT))

@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="430" viewBox="0 0 1200 430" font-family="-apple-system,Segoe UI,Helvetica,Arial,sans-serif">
 <rect width="1200" height="430" rx="14" fill="#0d1117"/>
-<defs><marker id="a" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0,0 L12,6 L0,12 z" fill="#6e7681"/></marker></defs>
+<defs><marker id="a" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="10" refX="10" refY="5" orient="auto"><path d="M0,0 L11,5 L0,10 z" fill="#6e7681"/></marker></defs>
 <path d="M196,242 L258,242" fill="none" stroke="#6e7681" stroke-width="2.5" marker-end="url(#a)"/>
 <text x="227" y="230" font-size="17" fill="#9c9c9c" text-anchor="middle">MIPI</text>
 <path d="M452,226 L686,226" fill="none" stroke="#6e7681" stroke-width="2.5" marker-end="url(#a)"/>

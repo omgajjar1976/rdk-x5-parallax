@@ -1,45 +1,47 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="560" viewBox="0 0 1200 560" font-family="-apple-system,Segoe UI,Helvetica,Arial,sans-serif">
-<rect width="1200" height="560" rx="14" fill="#0d1117"/>
-<defs><marker id="a" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0,0 L12,6 L0,12 z" fill="#6e7681"/></marker></defs>
-<rect x="12" y="12" width="400" height="536" rx="14" fill="none" stroke="#474747" stroke-width="2" stroke-dasharray="8 6"/>
-<text x="30" y="44" font-size="18" font-weight="700" fill="#9c9c9c">LAPTOP  (Ubuntu 24.04, ROS 2 Jazzy)</text>
-<rect x="500" y="12" width="688" height="536" rx="14" fill="none" stroke="#474747" stroke-width="2" stroke-dasharray="8 6"/>
-<text x="518" y="44" font-size="18" font-weight="700" fill="#9c9c9c">RDK X5  (RDK OS 3.5.0, ROS 2 Humble / TROS)</text>
-<rect x="36" y="70" width="352" height="96" rx="12" fill="#161b22" stroke="#6e7681" stroke-width="2"/>
-<text x="212.0" y="114.0" font-size="20" font-weight="600" fill="#efefef" text-anchor="middle">Webots + SUMO world</text>
-<text x="212.0" y="140.0" font-size="16" fill="#9c9c9c" text-anchor="middle">city / SF, traffic, pedestrians</text>
-<rect x="36" y="214" width="352" height="96" rx="12" fill="#161b22" stroke="#6e7681" stroke-width="2"/>
-<text x="212.0" y="258.0" font-size="20" font-weight="600" fill="#efefef" text-anchor="middle">ros_bridge</text>
-<text x="212.0" y="284.0" font-size="16" fill="#9c9c9c" text-anchor="middle">stereo 640x352, 14 Hz, watchdog</text>
-<rect x="36" y="400" width="352" height="110" rx="12" fill="#161b22" stroke="#6e7681" stroke-width="2"/>
-<text x="212.0" y="451.0" font-size="20" font-weight="600" fill="#efefef" text-anchor="middle">Scorer (ground truth)</text>
-<text x="212.0" y="477.0" font-size="16" fill="#9c9c9c" text-anchor="middle">depth check built; scenarios next</text>
-<rect x="540" y="214" width="200" height="96" rx="12" fill="#161b22" stroke="#6e7681" stroke-width="2" stroke-dasharray="9 6"/>
-<text x="640.0" y="258.0" font-size="20" font-weight="600" fill="#efefef" text-anchor="middle">hil_input</text>
-<text x="640.0" y="284.0" font-size="16" fill="#9c9c9c" text-anchor="middle">pair -> NV12 stereo</text>
-<rect x="790" y="90" width="340" height="100" rx="12" fill="#161b22" stroke="#338ced" stroke-width="3.5"/>
-<text x="960.0" y="136.0" font-size="20" font-weight="600" fill="#efefef" text-anchor="middle">stereo_yolo</text>
-<text x="960.0" y="162.0" font-size="16" fill="#9c9c9c" text-anchor="middle">YOLO11m on BPU + box distance</text>
-<rect x="790" y="214" width="340" height="96" rx="12" fill="#161b22" stroke="#6e7681" stroke-width="2" stroke-dasharray="9 6"/>
-<text x="960.0" y="258.0" font-size="20" font-weight="600" fill="#efefef" text-anchor="middle">StereoNet (BPU)</text>
-<text x="960.0" y="284.0" font-size="16" fill="#9c9c9c" text-anchor="middle">dense depth, 2nd workload</text>
-<rect x="790" y="340" width="340" height="96" rx="12" fill="#161b22" stroke="#338ced" stroke-width="3.5" stroke-dasharray="9 6"/>
-<text x="960.0" y="384.0" font-size="20" font-weight="600" fill="#efefef" text-anchor="middle">planner + safety</text>
-<text x="960.0" y="410.0" font-size="16" fill="#9c9c9c" text-anchor="middle">ACC / emergency brake, e-stop</text>
-<path d="M212,166 L212,212" fill="none" stroke="#6e7681" stroke-width="2.5" marker-end="url(#a)"/>
-<path d="M388,262 L538,262" fill="none" stroke="#6e7681" stroke-width="2.5" marker-end="url(#a)"/>
-<text x="463" y="250" font-size="16" fill="#9c9c9c" text-anchor="middle">stereo pair</text>
-<path d="M740,240 L765,240 L765,140 L788,140" fill="none" stroke="#6e7681" stroke-width="2.5" marker-end="url(#a)"/>
-<path d="M740,262 L788,262" fill="none" stroke="#6e7681" stroke-width="2.5" marker-end="url(#a)"/>
-<path d="M1130,140 L1152,140 L1152,388 L1132,388" fill="none" stroke="#6e7681" stroke-width="2.5" marker-end="url(#a)"/>
-<text x="1174" y="264" font-size="16" fill="#9c9c9c" text-anchor="middle" transform="rotate(90 1174 264)">boxes + metres</text>
-<path d="M960,310 L960,338" fill="none" stroke="#6e7681" stroke-width="2.5" marker-end="url(#a)"/>
-<text x="975" y="330" font-size="16" fill="#9c9c9c" text-anchor="start">depth</text>
-<path d="M788,388 L300,388 L300,312" fill="none" stroke="#6e7681" stroke-width="2.5" marker-end="url(#a)"/>
-<text x="560" y="378" font-size="16" fill="#9c9c9c" text-anchor="middle">cmd_drive (Ackermann, 15 Hz)</text>
-<path d="M150,312 L150,398" fill="none" stroke="#6e7681" stroke-width="2.5" marker-end="url(#a)"/>
-<text x="160" y="360" font-size="16" fill="#9c9c9c" text-anchor="start">GT depth + odom</text>
-<path d="M810,310 L810,324 L752,324 L752,470 L390,470" fill="none" stroke="#6e7681" stroke-width="2.5" marker-end="url(#a)"/>
-<text x="560" y="460" font-size="16" fill="#9c9c9c" text-anchor="middle">board depth</text>
-<text x="36" y="540" font-size="16" fill="#9c9c9c">Dashed = planned. Ground truth only reaches the scorer, never the board.</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="620" viewBox="0 0 1200 620" font-family="-apple-system,Segoe UI,Helvetica,Arial,sans-serif">
+<rect width="1200" height="620" rx="14" fill="#0d1117"/>
+<defs><marker id="a" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="10" refX="10" refY="5" orient="auto"><path d="M0,0 L11,5 L0,10 z" fill="#6e7681"/></marker></defs>
+<rect x="12" y="12" width="364" height="596" rx="14" fill="none" stroke="#474747" stroke-width="2" stroke-dasharray="8 6"/>
+<text x="30" y="42" font-size="18" font-weight="700" fill="#9c9c9c">LAPTOP  (ROS 2 Jazzy)</text>
+<rect x="448" y="12" width="740" height="596" rx="14" fill="none" stroke="#474747" stroke-width="2" stroke-dasharray="8 6"/>
+<text x="466" y="42" font-size="18" font-weight="700" fill="#9c9c9c">RDK X5  (ROS 2 Humble / TROS)</text>
+<rect x="32" y="112" width="324" height="90" rx="12" fill="#161b22" stroke="#6e7681" stroke-width="2"/>
+<text x="194.0" y="153.0" font-size="20" font-weight="600" fill="#efefef" text-anchor="middle">Webots + SUMO world</text>
+<text x="194.0" y="179.0" font-size="15" fill="#9c9c9c" text-anchor="middle">city / SF, traffic, pedestrians</text>
+<rect x="32" y="246" width="324" height="100" rx="12" fill="#161b22" stroke="#6e7681" stroke-width="2"/>
+<text x="194.0" y="292.0" font-size="20" font-weight="600" fill="#efefef" text-anchor="middle">ros_bridge</text>
+<text x="194.0" y="318.0" font-size="15" fill="#9c9c9c" text-anchor="middle">stereo 640x352, 14 Hz, watchdog</text>
+<rect x="32" y="484" width="324" height="90" rx="12" fill="#161b22" stroke="#6e7681" stroke-width="2"/>
+<text x="194.0" y="525.0" font-size="20" font-weight="600" fill="#efefef" text-anchor="middle">Scorer (ground truth)</text>
+<text x="194.0" y="551.0" font-size="15" fill="#9c9c9c" text-anchor="middle">depth check built; scenarios next</text>
+<rect x="498" y="260" width="160" height="92" rx="12" fill="#161b22" stroke="#6e7681" stroke-width="2" stroke-dasharray="9 6"/>
+<text x="578.0" y="302.0" font-size="20" font-weight="600" fill="#efefef" text-anchor="middle">hil_input</text>
+<text x="578.0" y="328.0" font-size="15" fill="#9c9c9c" text-anchor="middle">to NV12</text>
+<rect x="708" y="140" width="272" height="92" rx="12" fill="#161b22" stroke="#338ced" stroke-width="3.5"/>
+<text x="844.0" y="182.0" font-size="20" font-weight="600" fill="#efefef" text-anchor="middle">stereo_yolo</text>
+<text x="844.0" y="208.0" font-size="15" fill="#9c9c9c" text-anchor="middle">YOLO11m on BPU + distance</text>
+<rect x="708" y="380" width="272" height="92" rx="12" fill="#161b22" stroke="#6e7681" stroke-width="2" stroke-dasharray="9 6"/>
+<text x="844.0" y="422.0" font-size="20" font-weight="600" fill="#efefef" text-anchor="middle">StereoNet</text>
+<text x="844.0" y="448.0" font-size="15" fill="#9c9c9c" text-anchor="middle">dense depth on BPU</text>
+<rect x="1030" y="260" width="146" height="92" rx="12" fill="#161b22" stroke="#338ced" stroke-width="3.5" stroke-dasharray="9 6"/>
+<text x="1103.0" y="302.0" font-size="20" font-weight="600" fill="#efefef" text-anchor="middle">planner</text>
+<text x="1103.0" y="328.0" font-size="15" fill="#9c9c9c" text-anchor="middle">+ safety</text>
+<path d="M194,202 L194,246" fill="none" stroke="#6e7681" stroke-width="2.5" marker-end="url(#a)"/>
+<path d="M356,320 L498,320" fill="none" stroke="#6e7681" stroke-width="2.5" marker-end="url(#a)"/>
+<text x="412" y="342" font-size="16" fill="#9c9c9c" text-anchor="middle">stereo</text>
+<text x="412" y="362" font-size="16" fill="#9c9c9c" text-anchor="middle">pair</text>
+<path d="M658,290 L683,290 L683,186 L708,186" fill="none" stroke="#6e7681" stroke-width="2.5" marker-end="url(#a)"/>
+<path d="M658,322 L683,322 L683,426 L708,426" fill="none" stroke="#6e7681" stroke-width="2.5" marker-end="url(#a)"/>
+<path d="M980,186 L1005,186 L1005,290 L1030,290" fill="none" stroke="#6e7681" stroke-width="2.5" marker-end="url(#a)"/>
+<path d="M980,426 L1005,426 L1005,322 L1030,322" fill="none" stroke="#6e7681" stroke-width="2.5" marker-end="url(#a)"/>
+<text x="1014" y="178" font-size="16" fill="#9c9c9c" text-anchor="start">boxes + metres</text>
+<text x="1014" y="448" font-size="16" fill="#9c9c9c" text-anchor="start">depth</text>
+<path d="M1150,260 L1150,74 L412,74 L412,272 L356,272" fill="none" stroke="#6e7681" stroke-width="2.5" marker-end="url(#a)"/>
+<text x="757" y="98" font-size="16" fill="#9c9c9c" text-anchor="middle">cmd_drive (Ackermann, 15 Hz)</text>
+<path d="M194,346 L194,484" fill="none" stroke="#6e7681" stroke-width="2.5" marker-end="url(#a)"/>
+<text x="206" y="411" font-size="16" fill="#9c9c9c" text-anchor="start">ground truth:</text>
+<text x="206" y="432" font-size="16" fill="#9c9c9c" text-anchor="start">depth + odom</text>
+<path d="M844,472 L844,529 L356,529" fill="none" stroke="#6e7681" stroke-width="2.5" marker-end="url(#a)"/>
+<text x="600" y="519" font-size="16" fill="#9c9c9c" text-anchor="middle">board depth</text>
+<text x="466" y="586" font-size="15" fill="#9c9c9c">Dashed = planned. Ground truth never reaches the board.</text>
 </svg>
