@@ -35,6 +35,14 @@ Sensors (simulated stereo, or the real GS130W) → AI on the BPU (YOLO11m, Stere
 
 ## ROS 2 graph
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="../figures/ros_graph_dark.svg">
+  <img src="../figures/ros_graph_light.svg" alt="ROS 2 graph: laptop bridge and scorer; RDK X5 hil_input, stereo_yolo, StereoNet, planner and safety. Solid boxes are built, dashed are planned">
+</picture>
+
+<details>
+<summary><b>Topic table (types and rates)</b></summary>
+
 | Topic | Type | Publisher → subscriber | Rate |
 |---|---|---|---|
 | `/hil/stereo/left/image_raw`, `/hil/stereo/right/image_raw` | `sensor_msgs/Image` bgr8 640x352 | ros_bridge → hil_input | 14 Hz (measured) |
@@ -49,6 +57,8 @@ Sensors (simulated stereo, or the real GS130W) → AI on the BPU (YOLO11m, Stere
 | `/hil/ground_truth/depth` | `sensor_msgs/Image` 32FC1 m, planar Z, pixel-aligned with the left image | ros_bridge → scorer only | 14 Hz |
 | `/stereo_yolo/perf` | `std_msgs/String` (JSON timings) | stereo_yolo → logger | per frame |
 
+</details>
+
 Middleware: CycloneDDS, `ROS_DOMAIN_ID=7`, laptop on Jazzy, board on Humble. Cross-distro `sensor_msgs/Image` and
 `ackermann_msgs` verified from a Humble container: 14 Hz, all stamps, 0 → 3 → 0 m/s. One CycloneDDS start-up warning is
 open, with no data loss.
@@ -58,3 +68,9 @@ open, with no data loss.
 Webots gives a pixel-exact depth image (RangeFinder) from the same pose and field of view as the left camera, and it
 runs SUMO traffic. That's what makes per-pixel scoring possible. The ground truth was verified with a photometric
 warp test (best fit: scale 1.00, offset 0.0 px, row shift 0) in both worlds.
+
+## The simulated world
+
+| City world (traffic, pedestrian crossing) | San Francisco world |
+|---|---|
+| ![City world with the stereo camera views inset](../images/09_sim_city.jpg) | ![San Francisco world](../images/10_sim_sf.jpg) |

@@ -217,6 +217,84 @@ def hil_architecture(mode):
     open(os.path.join(OUT, f'hil_architecture_{mode}.svg'), 'w').write('\n'.join(out))
 
 
+def ros_graph(mode):
+    """ROS 2 graph: nodes = boxes (solid built, dashed planned), topics = pills with type and rate."""
+    t = THEME[mode]
+    W, H = 1000, 1080
+    out = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" viewBox="0 0 {W} {H}" '
+           f'font-family="-apple-system,Segoe UI,Helvetica,Arial,sans-serif">',
+           f'<rect width="{W}" height="{H}" rx="14" fill="{t["bg"]}"/>',
+           f'<defs><marker id="a" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">'
+           f'<path d="M0,0 L12,6 L0,12 z" fill="{t["edge"]}"/></marker></defs>']
+    mono = "ui-monospace,SFMono-Regular,Menlo,Consolas,monospace"
+
+    def band(y, h, label):
+        out.append(f'<rect x="8" y="{y}" width="{W - 16}" height="{h}" rx="14" fill="none" stroke="{t["axis"]}" stroke-width="2" stroke-dasharray="8 6"/>')
+        out.append(f'<text x="{W - 24}" y="{y + 30}" font-size="18" font-weight="700" fill="{t["ink2"]}" text-anchor="end">{label}</text>')
+
+    def node(x, y, w, title, sub, built=True, hi=False):
+        stroke = t['hi'] if hi else t['edge']
+        dash = '' if built else ' stroke-dasharray="9 6"'
+        out.append(f'<rect x="{x}" y="{y}" width="{w}" height="74" rx="12" fill="{t["box"]}" stroke="{stroke}" stroke-width="{3 if hi else 2}"{dash}/>')
+        out.append(f'<text x="{x + w / 2}" y="{y + 32}" font-size="21" font-weight="700" fill="{t["ink"]}" text-anchor="middle">{title}</text>')
+        out.append(f'<text x="{x + w / 2}" y="{y + 57}" font-size="16" fill="{t["ink2"]}" text-anchor="middle">{sub}</text>')
+
+    def topic(x, y, w, name, info):
+        out.append(f'<rect x="{x}" y="{y}" width="{w}" height="60" rx="30" fill="{t["bg"]}" stroke="{t["s1"]}" stroke-width="2"/>')
+        out.append(f'<text x="{x + w / 2}" y="{y + 26}" font-size="16" font-family="{mono}" fill="{t["ink"]}" text-anchor="middle">{name}</text>')
+        out.append(f'<text x="{x + w / 2}" y="{y + 47}" font-size="15" fill="{t["ink2"]}" text-anchor="middle">{info}</text>')
+
+    def edge(points):
+        d = 'M' + ' L'.join(f'{x},{y}' for x, y in points)
+        out.append(f'<path d="{d}" fill="none" stroke="{t["edge"]}" stroke-width="2.2" marker-end="url(#a)"/>')
+
+    band(10, 250, 'LAPTOP  (Jazzy)')
+    band(276, 790, 'RDK X5  (Humble / TROS)')
+    # laptop
+    node(60, 56, 290, 'ros_bridge', 'Webots ego car + watchdog')
+    topic(370, 63, 260, '/hil/ground_truth/*', 'depth 32FC1 + odom, 14 Hz')
+    node(650, 56, 300, 'scorer', 'check_depth + scenarios', built=True)
+    edge([(350, 93), (368, 93)]); edge([(630, 93), (648, 93)])
+    topic(40, 168, 460, '/hil/stereo/{left,right}/image_raw', 'Image bgr8 640x352, 14 Hz (+ camera_info)')
+    edge([(205, 130), (205, 166)])
+    # board
+    node(60, 316, 290, 'hil_input', 'pair to NV12 stereo', built=False)
+    edge([(205, 228), (205, 314)])
+    topic(40, 420, 460, '/image_combine_raw', 'Image nv12, left over right, 14 Hz')
+    edge([(205, 390), (205, 418)])
+    node(40, 520, 300, 'stereo_yolo', 'YOLO11m BPU + box distance', hi=True)
+    node(380, 520, 300, 'StereoNet', 'BPU dense depth', built=False)
+    node(720, 520, 250, 'websocket', 'browser view', built=True)
+    edge([(190, 480), (190, 518)]); edge([(440, 480), (530, 518)])
+    topic(30, 624, 330, '/stereo_yolo/detections', 'PerceptionTargets, 10 Hz+')
+    topic(380, 624, 300, 'StereoNet depth', 'Image depth, 10 Hz+')
+    edge([(190, 594), (190, 622)]); edge([(530, 594), (530, 622)])
+    edge([(345, 624), (345, 608), (845, 608), (845, 596)])
+    edge([(680, 640), (985, 640), (985, 132), (952, 132)])
+    node(40, 730, 290, 'planner', 'nearest object, ACC + brake', built=False, hi=True)
+    edge([(190, 684), (190, 728)]); edge([(530, 684), (530, 706), (300, 706), (300, 728)])
+    topic(350, 737, 260, '/hil/planner/cmd', 'Ackermann, 15 Hz')
+    node(640, 730, 300, 'safety', 'e-stop latch, limits', built=False, hi=True)
+    edge([(330, 767), (348, 767)]); edge([(610, 767), (638, 767)])
+    topic(640, 850, 300, '/hil/estop', 'Bool, latched, on demand')
+    edge([(790, 850), (790, 806)])
+    topic(250, 960, 470, '/hil/cmd_drive', 'AckermannDriveStamped, 15 Hz, 0.5 s watchdog')
+    edge([(700, 804), (700, 830), (600, 830), (600, 958)])
+    edge([(250, 990), (24, 990), (24, 93), (58, 93)])
+    # legend
+    ly = 1048
+    out.append(f'<rect x="30" y="{ly - 18}" width="34" height="22" rx="6" fill="{t["box"]}" stroke="{t["edge"]}" stroke-width="2"/>')
+    out.append(f'<text x="72" y="{ly}" font-size="16" fill="{t["ink2"]}">built</text>')
+    out.append(f'<rect x="130" y="{ly - 18}" width="34" height="22" rx="6" fill="{t["box"]}" stroke="{t["edge"]}" stroke-width="2" stroke-dasharray="7 5"/>')
+    out.append(f'<text x="172" y="{ly}" font-size="16" fill="{t["ink2"]}">planned (Stage 3)</text>')
+    out.append(f'<rect x="330" y="{ly - 18}" width="34" height="22" rx="11" fill="{t["bg"]}" stroke="{t["s1"]}" stroke-width="2"/>')
+    out.append(f'<text x="372" y="{ly}" font-size="16" fill="{t["ink2"]}">topic: name, type, rate</text>')
+    out.append(f'<rect x="590" y="{ly - 18}" width="34" height="22" rx="6" fill="{t["box"]}" stroke="{t["hi"]}" stroke-width="3"/>')
+    out.append(f'<text x="632" y="{ly}" font-size="16" fill="{t["ink2"]}">my nodes</text>')
+    out.append('</svg>')
+    open(os.path.join(OUT, f'ros_graph_{mode}.svg'), 'w').write('\n'.join(out))
+
+
 if __name__ == '__main__':
     for m in THEME:
         accuracy(m)
@@ -224,4 +302,5 @@ if __name__ == '__main__':
         speedup(m)
         architecture(m)
         hil_architecture(m)
+        ros_graph(m)
     print('figures written to', os.path.abspath(OUT))

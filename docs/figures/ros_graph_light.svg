@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1080" viewBox="0 0 1000 1080" font-family="-apple-system,Segoe UI,Helvetica,Arial,sans-serif">
+<rect width="1000" height="1080" rx="14" fill="#ffffff"/>
+<defs><marker id="a" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0,0 L12,6 L0,12 z" fill="#8c959f"/></marker></defs>
+<rect x="8" y="10" width="984" height="250" rx="14" fill="none" stroke="#c2c2c2" stroke-width="2" stroke-dasharray="8 6"/>
+<text x="976" y="40" font-size="18" font-weight="700" fill="#666666" text-anchor="end">LAPTOP  (Jazzy)</text>
+<rect x="8" y="276" width="984" height="790" rx="14" fill="none" stroke="#c2c2c2" stroke-width="2" stroke-dasharray="8 6"/>
+<text x="976" y="306" font-size="18" font-weight="700" fill="#666666" text-anchor="end">RDK X5  (Humble / TROS)</text>
+<rect x="60" y="56" width="290" height="74" rx="12" fill="#f6f8fa" stroke="#8c959f" stroke-width="2"/>
+<text x="205.0" y="88" font-size="21" font-weight="700" fill="#191919" text-anchor="middle">ros_bridge</text>
+<text x="205.0" y="113" font-size="16" fill="#666666" text-anchor="middle">Webots ego car + watchdog</text>
+<rect x="370" y="63" width="260" height="60" rx="30" fill="#ffffff" stroke="#257de0" stroke-width="2"/>
+<text x="500.0" y="89" font-size="16" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" fill="#191919" text-anchor="middle">/hil/ground_truth/*</text>
+<text x="500.0" y="110" font-size="15" fill="#666666" text-anchor="middle">depth 32FC1 + odom, 14 Hz</text>
+<rect x="650" y="56" width="300" height="74" rx="12" fill="#f6f8fa" stroke="#8c959f" stroke-width="2"/>
+<text x="800.0" y="88" font-size="21" font-weight="700" fill="#191919" text-anchor="middle">scorer</text>
+<text x="800.0" y="113" font-size="16" fill="#666666" text-anchor="middle">check_depth + scenarios</text>
+<path d="M350,93 L368,93" fill="none" stroke="#8c959f" stroke-width="2.2" marker-end="url(#a)"/>
+<path d="M630,93 L648,93" fill="none" stroke="#8c959f" stroke-width="2.2" marker-end="url(#a)"/>
+<rect x="40" y="168" width="460" height="60" rx="30" fill="#ffffff" stroke="#257de0" stroke-width="2"/>
+<text x="270.0" y="194" font-size="16" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" fill="#191919" text-anchor="middle">/hil/stereo/{left,right}/image_raw</text>
+<text x="270.0" y="215" font-size="15" fill="#666666" text-anchor="middle">Image bgr8 640x352, 14 Hz (+ camera_info)</text>
+<path d="M205,130 L205,166" fill="none" stroke="#8c959f" stroke-width="2.2" marker-end="url(#a)"/>
+<rect x="60" y="316" width="290" height="74" rx="12" fill="#f6f8fa" stroke="#8c959f" stroke-width="2" stroke-dasharray="9 6"/>
+<text x="205.0" y="348" font-size="21" font-weight="700" fill="#191919" text-anchor="middle">hil_input</text>
+<text x="205.0" y="373" font-size="16" fill="#666666" text-anchor="middle">pair to NV12 stereo</text>
+<path d="M205,228 L205,314" fill="none" stroke="#8c959f" stroke-width="2.2" marker-end="url(#a)"/>
+<rect x="40" y="420" width="460" height="60" rx="30" fill="#ffffff" stroke="#257de0" stroke-width="2"/>
+<text x="270.0" y="446" font-size="16" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" fill="#191919" text-anchor="middle">/image_combine_raw</text>
+<text x="270.0" y="467" font-size="15" fill="#666666" text-anchor="middle">Image nv12, left over right, 14 Hz</text>
+<path d="M205,390 L205,418" fill="none" stroke="#8c959f" stroke-width="2.2" marker-end="url(#a)"/>
+<rect x="40" y="520" width="300" height="74" rx="12" fill="#f6f8fa" stroke="#257de0" stroke-width="3"/>
+<text x="190.0" y="552" font-size="21" font-weight="700" fill="#191919" text-anchor="middle">stereo_yolo</text>
+<text x="190.0" y="577" font-size="16" fill="#666666" text-anchor="middle">YOLO11m BPU + box distance</text>
+<rect x="380" y="520" width="300" height="74" rx="12" fill="#f6f8fa" stroke="#8c959f" stroke-width="2" stroke-dasharray="9 6"/>
+<text x="530.0" y="552" font-size="21" font-weight="700" fill="#191919" text-anchor="middle">StereoNet</text>
+<text x="530.0" y="577" font-size="16" fill="#666666" text-anchor="middle">BPU dense depth</text>
+<rect x="720" y="520" width="250" height="74" rx="12" fill="#f6f8fa" stroke="#8c959f" stroke-width="2"/>
+<text x="845.0" y="552" font-size="21" font-weight="700" fill="#191919" text-anchor="middle">websocket</text>
+<text x="845.0" y="577" font-size="16" fill="#666666" text-anchor="middle">browser view</text>
+<path d="M190,480 L190,518" fill="none" stroke="#8c959f" stroke-width="2.2" marker-end="url(#a)"/>
+<path d="M440,480 L530,518" fill="none" stroke="#8c959f" stroke-width="2.2" marker-end="url(#a)"/>
+<rect x="30" y="624" width="330" height="60" rx="30" fill="#ffffff" stroke="#257de0" stroke-width="2"/>
+<text x="195.0" y="650" font-size="16" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" fill="#191919" text-anchor="middle">/stereo_yolo/detections</text>
+<text x="195.0" y="671" font-size="15" fill="#666666" text-anchor="middle">PerceptionTargets, 10 Hz+</text>
+<rect x="380" y="624" width="300" height="60" rx="30" fill="#ffffff" stroke="#257de0" stroke-width="2"/>
+<text x="530.0" y="650" font-size="16" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" fill="#191919" text-anchor="middle">StereoNet depth</text>
+<text x="530.0" y="671" font-size="15" fill="#666666" text-anchor="middle">Image depth, 10 Hz+</text>
+<path d="M190,594 L190,622" fill="none" stroke="#8c959f" stroke-width="2.2" marker-end="url(#a)"/>
+<path d="M530,594 L530,622" fill="none" stroke="#8c959f" stroke-width="2.2" marker-end="url(#a)"/>
+<path d="M345,624 L345,608 L845,608 L845,596" fill="none" stroke="#8c959f" stroke-width="2.2" marker-end="url(#a)"/>
+<path d="M680,640 L985,640 L985,132 L952,132" fill="none" stroke="#8c959f" stroke-width="2.2" marker-end="url(#a)"/>
+<rect x="40" y="730" width="290" height="74" rx="12" fill="#f6f8fa" stroke="#257de0" stroke-width="3" stroke-dasharray="9 6"/>
+<text x="185.0" y="762" font-size="21" font-weight="700" fill="#191919" text-anchor="middle">planner</text>
+<text x="185.0" y="787" font-size="16" fill="#666666" text-anchor="middle">nearest object, ACC + brake</text>
+<path d="M190,684 L190,728" fill="none" stroke="#8c959f" stroke-width="2.2" marker-end="url(#a)"/>
+<path d="M530,684 L530,706 L300,706 L300,728" fill="none" stroke="#8c959f" stroke-width="2.2" marker-end="url(#a)"/>
+<rect x="350" y="737" width="260" height="60" rx="30" fill="#ffffff" stroke="#257de0" stroke-width="2"/>
+<text x="480.0" y="763" font-size="16" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" fill="#191919" text-anchor="middle">/hil/planner/cmd</text>
+<text x="480.0" y="784" font-size="15" fill="#666666" text-anchor="middle">Ackermann, 15 Hz</text>
+<rect x="640" y="730" width="300" height="74" rx="12" fill="#f6f8fa" stroke="#257de0" stroke-width="3" stroke-dasharray="9 6"/>
+<text x="790.0" y="762" font-size="21" font-weight="700" fill="#191919" text-anchor="middle">safety</text>
+<text x="790.0" y="787" font-size="16" fill="#666666" text-anchor="middle">e-stop latch, limits</text>
+<path d="M330,767 L348,767" fill="none" stroke="#8c959f" stroke-width="2.2" marker-end="url(#a)"/>
+<path d="M610,767 L638,767" fill="none" stroke="#8c959f" stroke-width="2.2" marker-end="url(#a)"/>
+<rect x="640" y="850" width="300" height="60" rx="30" fill="#ffffff" stroke="#257de0" stroke-width="2"/>
+<text x="790.0" y="876" font-size="16" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" fill="#191919" text-anchor="middle">/hil/estop</text>
+<text x="790.0" y="897" font-size="15" fill="#666666" text-anchor="middle">Bool, latched, on demand</text>
+<path d="M790,850 L790,806" fill="none" stroke="#8c959f" stroke-width="2.2" marker-end="url(#a)"/>
+<rect x="250" y="960" width="470" height="60" rx="30" fill="#ffffff" stroke="#257de0" stroke-width="2"/>
+<text x="485.0" y="986" font-size="16" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" fill="#191919" text-anchor="middle">/hil/cmd_drive</text>
+<text x="485.0" y="1007" font-size="15" fill="#666666" text-anchor="middle">AckermannDriveStamped, 15 Hz, 0.5 s watchdog</text>
+<path d="M700,804 L700,830 L600,830 L600,958" fill="none" stroke="#8c959f" stroke-width="2.2" marker-end="url(#a)"/>
+<path d="M250,990 L24,990 L24,93 L58,93" fill="none" stroke="#8c959f" stroke-width="2.2" marker-end="url(#a)"/>
+<rect x="30" y="1030" width="34" height="22" rx="6" fill="#f6f8fa" stroke="#8c959f" stroke-width="2"/>
+<text x="72" y="1048" font-size="16" fill="#666666">built</text>
+<rect x="130" y="1030" width="34" height="22" rx="6" fill="#f6f8fa" stroke="#8c959f" stroke-width="2" stroke-dasharray="7 5"/>
+<text x="172" y="1048" font-size="16" fill="#666666">planned (Stage 3)</text>
+<rect x="330" y="1030" width="34" height="22" rx="11" fill="#ffffff" stroke="#257de0" stroke-width="2"/>
+<text x="372" y="1048" font-size="16" fill="#666666">topic: name, type, rate</text>
+<rect x="590" y="1030" width="34" height="22" rx="6" fill="#f6f8fa" stroke="#257de0" stroke-width="3"/>
+<text x="632" y="1048" font-size="16" fill="#666666">my nodes</text>
+</svg>
