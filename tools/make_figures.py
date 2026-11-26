@@ -169,10 +169,59 @@ def architecture(mode):
     open(os.path.join(OUT, f'architecture_{mode}.svg'), 'w').write('\n'.join(out))
 
 
+def hil_architecture(mode):
+    """Stage 2/3 hardware-in-the-loop data flow: laptop sim <-> RDK X5."""
+    t = THEME[mode]
+    W, H = 1200, 560
+    out = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" viewBox="0 0 {W} {H}" '
+           f'font-family="-apple-system,Segoe UI,Helvetica,Arial,sans-serif">',
+           f'<rect width="{W}" height="{H}" rx="14" fill="{t["bg"]}"/>',
+           f'<defs><marker id="a" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">'
+           f'<path d="M0,0 L12,6 L0,12 z" fill="{t["edge"]}"/></marker></defs>']
+    # two zones
+    for x, w, label in ((12, 400, 'LAPTOP  (Ubuntu 24.04, ROS 2 Jazzy)'), (500, 688, 'RDK X5  (RDK OS 3.5.0, ROS 2 Humble / TROS)')):
+        out.append(f'<rect x="{x}" y="12" width="{w}" height="{H - 24}" rx="14" fill="none" stroke="{t["axis"]}" stroke-width="2" stroke-dasharray="8 6"/>')
+        out.append(f'<text x="{x + 18}" y="44" font-size="18" font-weight="700" fill="{t["ink2"]}">{label}</text>')
+
+    def box(x, y, w, h, title, sub, hi=False):
+        stroke = t['hi'] if hi else t['edge']
+        out.append(f'<rect x="{x}" y="{y}" width="{w}" height="{h}" rx="12" fill="{t["box"]}" stroke="{stroke}" stroke-width="{3.5 if hi else 2}"/>')
+        out.append(f'<text x="{x + w / 2}" y="{y + h / 2 - 4}" font-size="20" font-weight="600" fill="{t["ink"]}" text-anchor="middle">{title}</text>')
+        out.append(f'<text x="{x + w / 2}" y="{y + h / 2 + 22}" font-size="16" fill="{t["ink2"]}" text-anchor="middle">{sub}</text>')
+
+    def edge(points, label='', lx=0, ly=0, anchor='middle'):
+        d = 'M' + ' L'.join(f'{x},{y}' for x, y in points)
+        out.append(f'<path d="{d}" fill="none" stroke="{t["edge"]}" stroke-width="2.5" marker-end="url(#a)"/>')
+        if label:
+            out.append(f'<text x="{lx}" y="{ly}" font-size="16" fill="{t["ink2"]}" text-anchor="{anchor}">{label}</text>')
+
+    box(36, 70, 352, 96, 'Webots + SUMO world', 'city / SF, traffic, pedestrians')
+    box(36, 214, 352, 96, 'ros_bridge', 'stereo 640x352, 14 Hz, watchdog')
+    box(36, 400, 352, 110, 'Scorer (ground truth)', 'depth AbsRel, stop gap, collisions')
+    box(540, 214, 200, 96, 'hil_input', 'pair -> NV12 stereo')
+    box(790, 90, 340, 100, 'stereo_yolo', 'YOLO11m on BPU + box distance', hi=True)
+    box(790, 214, 340, 96, 'StereoNet (BPU)', 'dense depth, 2nd workload')
+    box(790, 340, 340, 96, 'planner + safety', 'ACC / emergency brake, e-stop', hi=True)
+    edge([(212, 166), (212, 212)])
+    edge([(388, 262), (538, 262)], 'stereo pair', 463, 250)
+    edge([(740, 240), (765, 240), (765, 140), (788, 140)])
+    edge([(740, 262), (788, 262)])
+    edge([(1130, 140), (1152, 140), (1152, 388), (1132, 388)])
+    out.append(f'<text x="1174" y="264" font-size="16" fill="{t["ink2"]}" text-anchor="middle" transform="rotate(90 1174 264)">boxes + metres</text>')
+    edge([(960, 310), (960, 338)], 'depth', 975, 330, 'start')
+    edge([(788, 388), (300, 388), (300, 312)], 'cmd_drive (Ackermann, 15 Hz)', 560, 378)
+    edge([(150, 312), (150, 398)], 'GT depth + odom', 160, 360, 'start')
+    edge([(810, 310), (810, 324), (752, 324), (752, 470), (390, 470)], 'board depth', 560, 460)
+    out.append(f'<text x="36" y="540" font-size="16" fill="{t["ink2"]}">Ground truth only reaches the scorer, never the board. Wi-Fi 5 GHz now, Ethernet planned (risk 1).</text>')
+    out.append('</svg>')
+    open(os.path.join(OUT, f'hil_architecture_{mode}.svg'), 'w').write('\n'.join(out))
+
+
 if __name__ == '__main__':
     for m in THEME:
         accuracy(m)
         bpu(m)
         speedup(m)
         architecture(m)
+        hil_architecture(m)
     print('figures written to', os.path.abspath(OUT))

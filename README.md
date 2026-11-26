@@ -12,7 +12,7 @@
 ![License](https://img.shields.io/badge/license-Apache--2.0-blue)
 ![Challenge](https://img.shields.io/badge/Dream%20Keeper%20Winter%202026-Stage%201-f47230)
 
-[Results](#results) · [How it works](#how-it-works) · [Run it](#run-it) · [Troubleshooting](#troubleshooting) · [Stock-stack issues](UPSTREAM_ISSUES.md)
+[Results](#results) · [How it works](#how-it-works) · [Run it](#run-it) · [Troubleshooting](#troubleshooting) · [Stock-stack issues](UPSTREAM_ISSUES.md) · **[Stage 2 plan](#stage-2-stereo-hil)**
 
 </div>
 
@@ -266,6 +266,24 @@ Everything below happened on this board while building the project.
 | Transparent bottle at 30 cm showed `?m` | Fewer than 5 patches matched; now a 7x7 grid with NCC ≥ 0.75 |
 
 </details>
+
+## Stage 2: Stereo HIL
+
+Next, the board drives a **simulated car**. Webots + SUMO on the laptop render a stereo pair with the GS130W's baseline and
+field of view. The RDK X5 runs YOLO11m and StereoNet on the BPU, decides (adaptive cruise, emergency brake) and sends back
+Ackermann commands. Every decision is scored against the simulator's pixel-exact ground truth.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/figures/hil_architecture_dark.svg">
+  <img src="docs/figures/hil_architecture_light.svg" alt="Stereo HIL data flow between the laptop simulator and the RDK X5">
+</picture>
+
+| Document | Contents |
+|---|---|
+| [Proposal](docs/stage2/PROPOSAL.md) | Problem, users, capabilities, innovation vs prior art, 7 measurable targets |
+| [Architecture](docs/stage2/ARCHITECTURE.md) | Data flow, module table with failure modes, BPU/CPU/laptop split, ROS 2 graph with types and rates |
+| [Engineering plan](docs/stage2/ENGINEERING_PLAN.md) | BOM, top five risks (trigger, mitigation, fallback), repository structure |
+| [Roadmap](ROADMAP.md) | Milestones to Dec 15, including the Dec 3 Mid-Point Showcase |
 
 ## Limitations and roadmap
 
