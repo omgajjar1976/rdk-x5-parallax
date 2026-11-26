@@ -50,8 +50,8 @@ class StereoYolo(Node):
         self.scales = {k: (q.scale.astype(np.float32) if int(q.quant_type) == 2 else None) for k, q in self.quants.items()}
         self.fxB = None  # px*m, from camera_info
         self.create_subscription(CameraInfo, '/image_combine_raw/right/camera_info', self.on_info, 1)
-        # depth 1: always work on the newest frame instead of a backlog
-        latest = QoSProfile(depth=1, history=HistoryPolicy.KEEP_LAST, reliability=ReliabilityPolicy.BEST_EFFORT)
+        # depth 1: newest frame, no backlog; RELIABLE because best-effort drops whole 4 MB frames (got none)
+        latest = QoSProfile(depth=1, history=HistoryPolicy.KEEP_LAST, reliability=ReliabilityPolicy.RELIABLE)
         self.create_subscription(Image, '/image_combine_raw', self.on_image, latest)
         self.pub = self.create_publisher(PerceptionTargets, '/stereo_yolo/detections', 10)
         self.pub_perf = self.create_publisher(String, '/stereo_yolo/perf', 10)
