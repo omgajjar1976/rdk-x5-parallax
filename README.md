@@ -1,8 +1,8 @@
 <div align="center">
 
-# RDK X5 Stereo YOLO
+# Parallax
 
-**Object detection with a distance in metres for every box, running on the RDK X5 BPU**
+**Stereo hardware-in-the-loop for the RDK X5: object detection with a distance in metres for every box, checked against a tape measure and a simulator's ground truth**
 
 ![Board](https://img.shields.io/badge/board-RDK%20X5%204GB-2b2b2b)
 ![Camera](https://img.shields.io/badge/camera-GS130W%20stereo-2b2b2b)
@@ -170,7 +170,7 @@ This also settles the GS130W baseline question raised on the D-Robotics forum (8
 
 ```bash
 # on the RDK X5 (RDK OS 3.5.0, TROS Humble); no build step needed
-git clone https://github.com/omgajjar1976/rdk-x5-stereo-yolo ~/stage1
+git clone https://github.com/omgajjar1976/rdk-x5-parallax ~/stage1
 source /opt/tros/humble/setup.bash
 ros2 launch ~/stage1/stereo_yolo.launch.py
 ```

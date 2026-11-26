@@ -1,4 +1,4 @@
-# Stage 2 Engineering Plan
+# Parallax: Stage 2 engineering plan
 
 ## Bill of materials
 
@@ -34,7 +34,7 @@ See [ROADMAP.md](../../ROADMAP.md). Milestones: **Dec 3** Mid-Point Showcase (bo
 ## Repository structure (target for Stage 3)
 
 ```text
-rdk-x5-stereo-yolo/
+rdk-x5-parallax/
 ├── src/
 │   ├── stereo_yolo/        # Stage 1 node (YOLO on BPU + per-box stereo), later the C++ port
 │   ├── hil_input/          # sim stereo -> NV12 /image_combine_raw

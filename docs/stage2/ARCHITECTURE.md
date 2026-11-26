@@ -1,4 +1,4 @@
-# Stage 2 Architecture
+# Parallax: Stage 2 architecture
 
 ## Data flow
 

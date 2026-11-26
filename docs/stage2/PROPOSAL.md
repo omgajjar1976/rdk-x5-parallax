@@ -1,4 +1,4 @@
-# Stage 2 Proposal: Stereo HIL, an RDK X5 that drives a simulated car and is scored against ground truth
+# Parallax: Stage 2 proposal. Stereo HIL, an RDK X5 that drives a simulated car and is scored against ground truth
 
 ## The demo, in one scene
 
