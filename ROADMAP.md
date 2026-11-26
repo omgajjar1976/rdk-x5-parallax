@@ -3,7 +3,7 @@
 | Status | Dates | Milestone | Done when |
 |---|---|---|---|
 | ✅ | Nov 24–26 | **Stage 1:** flash, GS130W bring-up, YOLO11m on the BPU + per-box stereo distance | +1.5 % at 60 cm; repo, Discord post, showcase PR #20 |
-| ✅ | Nov 25 | HIL base: Webots + SUMO worlds, ros_bridge, Humble↔Jazzy check, pixel-exact depth ground truth, `check_depth.py` | Depth checker self-test (8 cases) + geometry check pass in both worlds; bridge test PASS |
+| ✅ | Nov 25 | HIL base: Webots + SUMO worlds, ros_bridge, Humble↔Jazzy check, pixel-exact depth ground truth, `check_depth.py` | Self-test 9/9 in both worlds; bridge test PASS |
 | ✅ | Nov 26 | Upstream: 2 PRs (`x5-hobot-sp-samples` #21, #22), 1 issue (`hobot_mipi_cam` #115) | Opened |
 | ✅ | Nov 26 | **Stage 2:** proposal, architecture, engineering plan, roadmap | This document set |
 | ⬜ | Nov 27–Dec 2 | `hil_input`; stereo_yolo on sim frames; Ethernet link; StereoNet input test; first scored depth run | Depth report per range bin (T1) |

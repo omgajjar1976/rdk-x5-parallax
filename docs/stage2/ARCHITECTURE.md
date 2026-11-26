@@ -51,7 +51,7 @@ Sensors (simulated stereo, or the real GS130W) → AI on the BPU (YOLO11m, Stere
 | `/image_combine_raw` | `sensor_msgs/Image` nv12 (left over right) | hil_input or mipi_cam → stereo_yolo, StereoNet | 14 Hz sim / 30 Hz camera |
 | `/stereo_yolo/detections` | `ai_msgs/PerceptionTargets` (class, roi, `distance_m`) | stereo_yolo → planner, websocket | ≥ 10 Hz target |
 | StereoNet depth (topic per `hobot_stereonet`) | `sensor_msgs/Image` depth | StereoNet → planner, scorer | ≥ 10 Hz target |
-| `/hil/planner/cmd` (planned) | `ackermann_msgs/AckermannDriveStamped` | planner → safety | 15 Hz |
+| `/hil/planner/cmd` | `ackermann_msgs/AckermannDriveStamped` | planner → safety | 15 Hz |
 | `/hil/cmd_drive` | `ackermann_msgs/AckermannDriveStamped` | safety → ros_bridge | 15 Hz |
 | `/hil/estop` | `std_msgs/Bool` (latched) | operator → safety | on demand |
 | `/hil/ground_truth/odom` | `nav_msgs/Odometry` | ros_bridge → scorer only | 14 Hz |

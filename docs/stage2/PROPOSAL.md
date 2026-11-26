@@ -6,54 +6,31 @@ Testing a robot's perception on real roads is slow, unsafe and gives no ground t
 pedestrian is 7.4 m away, nobody knows the true distance. Most RDK X5 projects therefore show boxes on a screen and never
 measure whether the depth or the braking decision was right.
 
-## Where the project stands
-
-| ✅ Built and checked today | 🔨 Planned for Stage 3 |
-|---|---|
-| Stage 1 node on the board, **real camera**: YOLO11m on the BPU + distance per box | `hil_input`: feed simulator images to that node on the board |
-| Two simulator worlds with traffic; a pedestrian crossing in the city test | StereoNet on the BPU as the second workload |
-| `ros_bridge`: stereo out, drive commands in, **full brake after 0.5 s of silence** | Planner and safety nodes (adaptive cruise, emergency brake, e-stop) |
-| Pixel-exact depth ground truth and a depth checker (6 injected faults caught, 2 good inputs pass) | Scenario scorer (stopping gap, collisions), speed-up to 10 Hz |
-| Humble ↔ Jazzy messaging, tested from a Humble container | The first run with the **board in the loop** |
-
 ## The concept
 
-The RDK X5 **will run** its real perception and control stack on its own BPU and CPU, with a simulated stereo camera as
-its eyes. A laptop runs Webots with SUMO traffic and will send the board a rendered stereo pair (80 mm baseline and
-96.8° horizontal field of view, an idealised pinhole model of the GS130W). The board will send back speed and brake
-commands; lane keeping is a stretch goal. Because the simulator knows the exact depth of every pixel
-and the exact position of every car and pedestrian, **each decision the board makes can be scored automatically**: depth
+The RDK X5 runs its **real perception and control stack on its own BPU and CPU**, but its eyes are a simulated stereo
+camera. A laptop runs Webots with SUMO traffic and sends the board a rendered stereo pair (same baseline and field of
+view as the GS130W). The board sends back steering and speed. Because the simulator knows the exact depth of every pixel
+and the exact position of every car and pedestrian, **every decision the board makes is scored automatically**: depth
 error by range, stopping gap, collisions, latency.
 
 The real GS130W stays in the loop for **real-world accuracy runs** (tape measure on 60 cm floor tiles), so the project
 measures both sim-to-board and real-world performance with the same code.
 
-## Why test this way
+## The simulated world
 
-Testing braking against a person can't be done safely with a real person, repeated exactly, or checked against a true
-distance on a road. In a simulator it can: the same crossing can be run again and again, and the true distance of every
-pixel is known. Hardware-in-the-loop is the step between a desktop simulation and a vehicle: the **software and the
-compute are the real ones**, only the world is simulated.
+Left camera frames from the city world (640x352): pedestrians step onto the crossing while traffic moves around the ego
+car. Without the board in the loop, the scripted test car doesn't brake. In Stage 3 the board has to stop it.
 
-| This test bench can show | It cannot show |
-|---|---|
-| Whether the board sees the hazard in time, on its own BPU and CPU | That the system is safe on real roads |
-| Depth error by distance, stopping gap, latency, dropped frames | Behaviour with real glare, rain, dirt, lens blur or motion blur |
-| Whether a software change made things better or worse (repeatable runs) | How a real car's brakes and tyres respond |
+![Three frames: pedestrians approach a crossing, the car gets close, the car reaches a pedestrian](../images/11_sim_crossing_no_brain.jpg)
 
-So this is a **perception and braking test bench**, not a self-driving car. The real GS130W tape-measure runs stay in
-the project to keep the simulator results honest.
-
-## The test scene, and the problem to solve
-
-Left camera frames from the city world, 640x352. There's **no perception or planner in the loop yet**: a scripted test
-controller drives straight at 10 km/h, so it goes through the pedestrian. Stage 3 has to make the board stop.
-
-![Three frames: pedestrians approach a crossing, the car gets close, the car drives into a pedestrian](../images/11_sim_crossing_no_brain.jpg)
-
-What only a simulator can give: the exact depth of every pixel (right), used for scoring and never sent to the board.
+The simulator also gives the exact depth of every pixel (right). It is used for scoring and never sent to the board.
 
 ![Left camera view beside its ground-truth depth image](../images/12_sim_view_and_ground_truth.jpg)
+
+| City world | San Francisco world |
+|---|---|
+| ![City world with both stereo views inset](../images/09_sim_city.jpg) | ![San Francisco world with traffic](../images/10_sim_sf.jpg) |
 
 ## Users and interaction
 
@@ -81,15 +58,15 @@ board's view in the browser. A run ends with a report (`report.txt` + plots).
 | | Stock demo / prior art | This project |
 |---|---|---|
 | Stereo on RDK X5 | Depth image shown, accuracy unknown | Depth **scored per range bin** against exact sim ground truth, and against a tape in the real world |
-| Closed loop | Detection only | Planned: the board **controls the speed** of a car in traffic, with brake and follow decisions scored |
-| Prior HIL on RDK X5 | GaussianRPG v2.0 (Feb 2025): mono camera over HDMI capture, brake only, replayed scenes, no depth | **Stereo**, live SUMO traffic, **depth ground truth**, a depth scoring tool (built); speed control planned |
-| Fault finding | — | `check_depth.py` names the fault (scale, offset, units, missing pixels, shifted image grid, range instead of planar Z): 6 injected faults caught |
+| Closed loop | Detection only | Board **drives** a car in traffic; brake and follow decisions are scored |
+| Prior HIL on RDK X5 | GaussianRPG v2.0 (Feb 2025): mono camera over HDMI capture, brake only, replayed scenes, no depth | **Stereo**, live SUMO traffic, steering + speed, **depth ground truth**, scoring tools |
+| Fault finding | — | `check_depth.py` names the fault (wrong baseline/focal, cx offset, units, range vs planar Z, row shift) and caught all 6 injected faults in its self-test |
 
-## Decision logic (planned)
+## Decision logic
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="../figures/decision_flow_dark.svg">
-  <img src="../figures/decision_flow_light.svg" alt="Planned decision flow: e-stop, stale perception, time to collision, object in lane, else cruise">
+  <img src="../figures/decision_flow_light.svg" alt="Decision flow: e-stop, stale perception, time to collision, object in lane, else cruise">
 </picture>
 
 ## Measurable success targets (Stage 3)
