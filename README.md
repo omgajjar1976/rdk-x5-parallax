@@ -8,6 +8,12 @@ this is still exactly one on-device AI task.
 
 ![Bottle at 30 cm, detected and ranged on the board](docs/images/04_ai_bottle_30cm.jpg)
 
+| Test setup | Camera stand (3D-printed, adjustable tilt) |
+|---|---|
+| ![RDK X5 and GS130W on the stand, bottle one 60 cm floor tile ahead](docs/images/00_setup_bottle_one_tile.jpg) | ![Stand, front](docs/images/07_mount_front.jpg) ![Stand, top: board behind the camera](docs/images/08_mount_top.jpg) |
+
+The floor tiles are 60 cm, so a tile line gives a quick distance reference: 1 tile = 0.6 m, 2 = 1.2 m, 3 = 1.8 m.
+
 | What | Result (measured on my board) |
 |---|---|
 | Detector | YOLO11m (D-Robotics model zoo, Bayes-e build) on the BPU, 640x640 NV12 |
@@ -36,6 +42,7 @@ this is still exactly one on-device AI task.
 | Kernel / ROS | 6.1.83, ROS 2 Humble, TogetheROS `tros-humble` 2.5.2 |
 | Camera | RDK Stereo Camera GS130W: 2x SC132GS global shutter, 1280x1088, MIPI CSI-2 on both camera ports |
 | Power | 5 V / 5 A USB-C |
+| Mount | Own 3D-printed stand: board on a base plate, camera on two arms with a tilt pivot |
 | Network | Wi-Fi 5 GHz, SSH from an Ubuntu laptop |
 
 ## Setup
