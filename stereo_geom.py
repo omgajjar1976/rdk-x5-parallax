@@ -75,10 +75,12 @@ def box_disparity(L, R, box, max_disp=260, half=7, min_std=12.0, min_ncc=0.85):
     # central 60% of the box: less background bleeding in at the edges
     cx0, cx1 = x0 + 0.2 * (x1 - x0), x1 - 0.2 * (x1 - x0)
     cy0, cy1 = y0 + 0.2 * (y1 - y0), y1 - 0.2 * (y1 - y0)
-    step = max(3, int(min(cx1 - cx0, cy1 - cy0) / 8))
+    # at most 8 x 8 patch centres per box: cost stays flat for big boxes (a tall bottle took 890 ms)
+    vs = np.unique(np.linspace(max(cy0, half), min(cy1, h - half - 2), 8).astype(int))
+    us = np.unique(np.linspace(max(cx0, half + 1), min(cx1, w - half - 2), 8).astype(int))
     ds = []
-    for v in range(int(max(cy0, half)), int(min(cy1, h - half - 1)), step):
-        for u in range(int(max(cx0, half + 1)), int(min(cx1, w - half - 1)), step):
+    for v in vs:
+        for u in us:
             p = L[v - half:v + half + 1, u - half:u + half + 1]
             if p.std() < min_std:
                 continue
