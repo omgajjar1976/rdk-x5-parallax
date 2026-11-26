@@ -17,11 +17,17 @@ Sensors (simulated stereo, or the real GS130W) → AI on the BPU (YOLO11m, Stere
 | Webots + SUMO world | Laptop | world file, SUMO routes | rendered stereo, physics | Real-time factor drops (measured 0.81–0.95 with ~60 cars) → `/clock` is published, the board uses sim time for latency |
 | `ros_bridge` (built) | Laptop, in the ego controller | Webots cameras, RangeFinder, `/hil/cmd_drive` | stereo images + camera_info, `/clock`, ground truth | No command for 0.5 s → full brake (tested); speed ≤ 30 km/h, steer ≤ 0.5 rad clamps |
 | `hil_input` (to build) | RDK X5 | `/hil/stereo/*/image_raw` bgr8 | NV12 stereo in the same layout as `mipi_cam` (`/image_combine_raw`) | Left/right stamps differ → drop the pair; > 200 ms old → drop and count |
-| `stereo_yolo` (Stage 1, built) | RDK X5 | NV12 stereo, rectified `camera_info` | `/stereo_yolo/detections` (class, box, distance) | < 5 textured patches → distance NaN (planner ignores); model load fail → node exits, safety brakes |
+| `stereo_yolo` (Stage 1, built) | RDK X5 | NV12 stereo, rectified `camera_info` | `/stereo_yolo/detections` (class, box, distance) | < 5 textured patches → distance NaN (planner handles it, see below); model load fail → node exits, safety brakes |
 | StereoNet (`hobot_stereonet`) | RDK X5 BPU | stereo pair | dense depth image | Unverified ROS-topic input (risk 3) → fallback: per-box stereo only |
-| `planner` (to build) | RDK X5 CPU | detections, depth, own speed | `/hil/cmd_drive` | No perception for 0.3 s → brake; NaN distance → ignore object; speed command clamped |
+| `planner` (to build) | RDK X5 CPU | detections, depth, own speed | `/hil/cmd_drive` | No perception for 0.3 s → brake; object in lane with NaN distance → never ignored (see below); speed command clamped |
 | `safety` (to build) | RDK X5 CPU | `/hil/estop`, planner output | gated `/hil/cmd_drive` | E-stop latched until reset; heartbeat to the bridge, whose watchdog brakes if the board dies |
 | Scorer (`check_depth.py` built; scenario scorer to build) | Laptop | ground-truth depth/odom, board depth, detections | report + plots | Stamp mismatch → refuses to score ("copy header.stamp") |
+
+**Object in the ego lane with no valid distance** (planner, to build), in this order:
+
+1. If it had a valid distance in the last 0.3 s, predict from that distance and closing speed.
+2. Otherwise estimate from the box height, assuming the smallest plausible height for its class, so the error is on the near side.
+3. If neither is possible, brake.
 
 ## Compute allocation
 

@@ -109,7 +109,8 @@ Measured with one object in view; camera, JPEG encoder, web viewer and node all 
 | End-to-end rate | 5.4–5.8 fps |
 | Frame age at publish (capture → result) | 224–236 ms |
 
-Profiling on the board: the stock sample letterbox took 25.5 ms and the stock decode + filter 19 ms. The whole
+Profiling on the board during bring-up: the stock sample letterbox took 25.5 ms and the stock decode + filter 19 ms
+(timed alone on the idle board, the letterbox path is about 9.4 ms against 4.45 ms for mine). The whole
 YOLOv8n step went from 62.6 ms to about 33 ms after replacing both. The rest is Python: each 4 MB stereo frame is copied
 into Python, and each small `matchTemplate` costs ~1.3 ms on the busy A55 cores. The next step is a C++ node on the
 zero-copy (`hbmem`) transport.

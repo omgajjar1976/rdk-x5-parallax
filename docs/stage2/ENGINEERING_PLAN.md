@@ -21,6 +21,13 @@ No physical actuators: the actuator is the simulated car (decided for Stage 3).
 See [ROADMAP.md](../../ROADMAP.md). Milestones: **Dec 3** Mid-Point Showcase (board perceives the sim, depth scored);
 **Dec 9** closed loop (braking and following scored); **Dec 12–15** final package.
 
+## Extra scoring runs
+
+Reported beside targets T1–T7, which stay unchanged.
+
+- **False brakes:** cars pass in the next lane while the ego lane is empty. Count every brake command.
+- **Ride comfort:** during the car-following run, log peak deceleration (m/s²) and peak jerk (m/s³).
+
 ## Top five risks
 
 | # | Risk | Trigger (how we notice) | Mitigation | Fallback |

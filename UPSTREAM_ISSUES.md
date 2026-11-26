@@ -16,10 +16,12 @@ camera: RDK Stereo Camera GS130W. Found 2026-11-25/26. Each entry: what, evidenc
 - Upstream: `D-Robotics/x5-hobot-sp-samples`, `debian/app/pydev_demo/utils/postprocess_utils.py` line 186, still present on `main` (checked 2026-11-26).
   `D-Robotics/rdk_model_zoo` `utils/py_utils/quantization.py` already compares by name (`"SCALE"`), so that is the reference fix.
 
-## 2. Sample letterbox is slow (25 ms per frame on X5)
+## 2. Sample letterbox has no NV12 input path (extra work on camera frames)
 - Where: same samples, `preprocess_utils.resized_image` + `bgr_to_nv12_planes` path (BGR round trip).
-- Evidence: 25.5 ms for 1280x1088 on the board. A direct NV12 letterbox with strided 2x copy into a reused
-  buffer takes ~1 ms (`stereo_geom.letterbox_nv12`).
+- Evidence, alone on the idle board (RDK X5, one 1280x1088 camera frame, median of 200 runs, `schedutil` governor, 2 repeats):
+  NV12 -> BGR 1.88 ms plus the stock BGR letterbox and `bgr_to_nv12_planes` 7.55 ms, against 4.45 ms for a direct
+  NV12 letterbox (strided 2x copy into a reused buffer, `stereo_geom.letterbox_nv12`).
+- An earlier profile during Stage 1 bring-up recorded 25.5 ms for the stock letterbox.
 - Fix: offer an NV12-in letterbox for camera frames.
 
 ## 3. YOLO samples set the NMS IoU threshold from the score threshold (5 samples)
