@@ -37,6 +37,7 @@ camera: RDK Stereo Camera GS130W. Found 2026-11-25/26. Each entry: what, evidenc
 
 ## 4. Default `mipi_rotation` with the GS130W gives vertical disparity and rotated camera_info
 - **Upstream issue:** https://github.com/D-Robotics/hobot_mipi_cam/issues/115
+- **Docs PR:** https://github.com/D-Robotics/accessories_doc/pull/6
 - Where: `hobot_mipi_cam`, `hobot_mipi_cap.cpp`: output turn = `rotation - cal_rotate`; the GS130W EEPROM
   stores angle 1 (90 deg), launch default `mipi_rotation 0.0`, so output is turned 270 deg.
 - Evidence: default launch: left/right shifted vertically (patch match dy ~55 px, dx 0), camera_info K/R/P look
