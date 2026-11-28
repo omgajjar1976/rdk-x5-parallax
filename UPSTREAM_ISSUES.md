@@ -16,13 +16,17 @@ camera: RDK Stereo Camera GS130W. Found 2026-11-25/26. Each entry: what, evidenc
 - Upstream: `D-Robotics/x5-hobot-sp-samples`, `debian/app/pydev_demo/utils/postprocess_utils.py` line 186, still present on `main` (checked 2026-11-26).
   `D-Robotics/rdk_model_zoo` `utils/py_utils/quantization.py` already compares by name (`"SCALE"`), so that is the reference fix.
 
-## 2. Sample letterbox has no NV12 input path (extra work on camera frames)
+## 2. BGR letterbox path costs extra time on NV12 camera frames (speed note)
 - Where: same samples, `preprocess_utils.resized_image` + `bgr_to_nv12_planes` path (BGR round trip).
 - Evidence, alone on the idle board (RDK X5, one 1280x1088 camera frame, median of 200 runs, `schedutil` governor, 2 repeats):
   NV12 -> BGR 1.88 ms plus the stock BGR letterbox and `bgr_to_nv12_planes` 7.55 ms, against 4.45 ms for a direct
   NV12 letterbox (strided 2x copy into a reused buffer, `stereo_geom.letterbox_nv12`).
 - An earlier profile during Stage 1 bring-up recorded 25.5 ms for the stock letterbox.
-- Fix: offer an NV12-in letterbox for camera frames.
+- `preprocess_utils.resize_nv12_yuv` already accepts NV12 planes (used by the MIPI camera samples); its speed was not
+  compared here.
+- With the `performance` governor (median of 200 runs, 2 repeats): the BGR path takes 6.01 / 6.08 ms, the direct NV12
+  letterbox 4.44 ms.
+- Suggestion: use an NV12 path in the detection samples when the input is already NV12.
 
 ## 3. YOLO samples set the NMS IoU threshold from the score threshold (5 samples)
 - **Upstream PR:** https://github.com/D-Robotics/x5-hobot-sp-samples/pull/22
@@ -41,16 +45,29 @@ camera: RDK Stereo Camera GS130W. Found 2026-11-25/26. Each entry: what, evidenc
   The websocket preview with defaults also looks sideways.
 - Fix: default the dual-channel launch to the EEPROM angle (rotation = cal_rotate) or document it for GS130W.
 - Upstream: `D-Robotics/hobot_mipi_cam` (default branch `develop`, active: PRs #112-114 merged recently). Behaviour change, so open an issue first.
+- Measured on both settings, same launch command (two-way SIFT matches, left against right):
 
-## 5. `camera_info` header frame_id `default_cam` for both eyes, distortion_model empty
+  | | default (`mipi_rotation 0.0`) | `mipi_rotation:=90.0` |
+  |---|---|---|
+  | median vertical shift | 156.9 px | 0.4 px |
+  | median sideways shift | 0.5 px | 76.1 px |
+  | matches within 1 row | 0 % (63 matches) | 83 % (95 matches) |
+
+  ![Left image with the default setting and with mipi_rotation 90](docs/images/upstream/issue115_default_vs_90.png)
+
+## 5. `camera_info` distortion_model is empty
 - Evidence: `/image_combine_raw/{left,right}/camera_info` both `frame_id: default_cam`, `distortion_model: ''`,
   `d` all zeros (fine for rectified output but the model should then be `plumb_bob` with zeros).
-- Fix: per-eye frame ids, set distortion_model.
+- Fix: set distortion_model. (Sharing one frame_id is usual for a rectified stereo pair: the baseline is in `P[3]`.)
 
 ## 6. A second `mipi_cam` launch while one runs fails with an unclear error
+- **Upstream issue:** https://github.com/D-Robotics/hobot_mipi_cam/issues/117
 - Evidence: `create_and_run_vflow(1590) failed, ret -217` then `rcl node's context is invalid`,
   and with another holder: `There are no available host.` No hint that the camera is busy.
 - Fix: detect the busy device and print "camera already in use by PID ...".
+- With the first launch still running, the second one prints `There are no available host.`, then
+  `init X5_RDK's mipi host and gpio failure:` followed by unreadable bytes, and dies with
+  `could not create publisher: rcl node's context is invalid`. The first launch keeps running.
 
 ## 7. hobot_shm env is required to receive the 4 MB stereo frames; failure is silent
 - Evidence: a Python subscriber started outside the launch (no `FASTRTPS_DEFAULT_PROFILES_FILE`
